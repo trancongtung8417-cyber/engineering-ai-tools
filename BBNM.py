@@ -7,7 +7,7 @@ def create_pdf(name, phone, note):
     pdf.add_page()
     
     # ĐƯỜNG DẪN ĐẾN FILE FONT BẠN VỪA TẢI LÊN
-    font_path = "Roboto-Regular.ttf" 
+    font_path = "Roboto-Italic-VariableFont_wdth,wght" 
     
     if os.path.exists(font_path):
         # Đăng ký font với tên 'Vietnamese'
