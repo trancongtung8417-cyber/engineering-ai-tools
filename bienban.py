@@ -10,7 +10,7 @@ def create_pdf(company, add, name_phone, tool, note):
     
     # 1. Vẽ khung viền trang trí (Border)
     pdf.set_line_width(0.5)
-    pdf.set_draw_color(220, 0, 0) # Màu đỏ Hilti cho khung
+    pdf.set_draw_color(150, 150, 150) # Màu đỏ Hilti cho khung
     pdf.rect(7, 7, 196, 283) # Khung ngoài
     pdf.set_line_width(0.2)
     pdf.rect(8, 8, 194, 281) # Khung trong tạo hiệu ứng viền đôi
@@ -51,24 +51,25 @@ def create_pdf(company, add, name_phone, tool, note):
     add_info_row("Địa chỉ giao nhận", add)
     add_info_row("Người gửi & Số ĐT", name_phone)
     add_info_row("Thiết bị & Số Seri", tool)
+    add_info_row("Tình trạng máy", note)
 
     # 5. Phần tình trạng máy (Khung ghi chú lớn)
-    pdf.ln(5)
-    pdf.set_font('Vietnamese', size=12)
-    pdf.set_fill_color(240, 240, 240)
-    pdf.cell(0, 10, txt=" Tình trạng máy khi tiếp nhận:", ln=True, fill=True)
-    pdf.set_font('Vietnamese', size=11)
-    pdf.multi_cell(0, 10, txt=note, border=1)
+    #pdf.ln(5)
+    #pdf.set_font('Vietnamese', size=12)
+    #pdf.set_fill_color(240, 240, 240)
+    #pdf.cell(0, 10, txt=" Tình trạng máy khi tiếp nhận:", ln=True, fill=True)
+    #pdf.set_font('Vietnamese', size=11)
+    #pdf.multi_cell(0, 10, txt=note, border=1)
 
     # 6. Phần chữ ký
-    pdf.ln(25)
-    pdf.set_font('Vietnamese', size=12)
-    pdf.cell(95, 10, txt="ĐẠI DIỆN KHÁCH HÀNG", ln=0, align='C')
-    pdf.cell(95, 10, txt="NGƯỜI NHẬN MÁY", ln=1, align='C')
-    pdf.set_font('Vietnamese', size=10)
-    pdf.set_text_color(150, 150, 150)
-    pdf.cell(95, 10, txt="(Ký và ghi rõ họ tên)", ln=0, align='C')
-    pdf.cell(95, 10, txt="(Ký và ghi rõ họ tên)", ln=1, align='C')
+#    pdf.ln(25)
+#    pdf.set_font('Vietnamese', size=12)
+#    pdf.cell(95, 10, txt="ĐẠI DIỆN KHÁCH HÀNG", ln=0, align='C')
+#    pdf.cell(95, 10, txt="NGƯỜI NHẬN MÁY", ln=1, align='C')
+#    pdf.set_font('Vietnamese', size=10)
+#    pdf.set_text_color(150, 150, 150)
+#    pdf.cell(95, 10, txt="(Ký và ghi rõ họ tên)", ln=0, align='C')
+#    pdf.cell(95, 10, txt="(Ký và ghi rõ họ tên)", ln=1, align='C')
 
     return pdf.output()
 
@@ -102,9 +103,9 @@ st.markdown("""
 if os.path.exists("logo.png"):
     st.image("logo.png", width=150)
 else:
-    st.title("🔴 HILTI SERVICE")
+    st.title("🔴 HILTI TOOL SERVICE CENTER")
 
-st.subheader("BIÊN BẢN TIẾP NHẬN THIẾT BỊ")
+st.subheader("BIÊN BẢN NHẬN MÁY")
 st.write("Vui lòng điền thông tin máy cần bảo hành/sửa chữa.")
 
 # Form nhập liệu
@@ -121,15 +122,16 @@ if st.button("XÁC NHẬN & TẠO PHIẾU"):
     if add and name_phone:
         # Bảng tóm tắt hiển thị đẹp mắt
         st.success("✅ Thông tin đã được ghi nhận!")
-        with st.expander("👉 NHẤN VÀO ĐÂY ĐỂ XEM TÓM TẮT & CHỤP ẢNH MÀN HÌNH", expanded=True):
+        with st.expander("👉 NHẤN VÀO ĐÂY ĐỂ XEM TÓM TẮT", expanded=True):
             st.write(f"**Khách hàng:** {name_phone}")
+            st.write(f"**Địa chỉ:** {add}")
             st.write(f"**Thiết bị:** {tool}")
             st.write(f"**Tình trạng:** {note}")
         
         try:
             pdf_data = create_pdf(company, add, name_phone, tool, note)
             st.download_button(
-                label="📥 TẢI BIÊN BẢN PDF (GỬI QUA ZALO)",
+                label="📥 TẢI BIÊN BẢN PDF",
                 data=bytes(pdf_data),
                 file_name=f"BBNM_{company}.pdf",
                 mime="application/pdf"
