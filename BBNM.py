@@ -20,14 +20,16 @@ def create_pdf(company, add, name_phone, tool, note):
     
     # Vẽ nội dung
     pdf.set_text_color(220, 0, 0) # Màu đỏ Hilti
-    pdf.cell(200, 10, txt="THÔNG TIN ĐĂNG KÝ HILTI", ln=True, align='C')
+    pdf.cell(200, 10, txt="BIÊN BẢN NHẬN MÁY", ln=True, align='C')
     
     pdf.set_text_color(0, 0, 0)
     pdf.ln(10)
-    pdf.cell(200, 10, txt=f"Họ tên: {name}", ln=True)
-    pdf.cell(200, 10, txt=f"Số điện thoại: {phone}", ln=True)
+    pdf.cell(200, 10, txt=f"Công ty: {company}", ln=True)
+    pdf.cell(200, 10, txt=f"Địa chỉ: {add}", ln=True)
+    pdf.cell(200, 10, txt=f"Tên và SDT: {name_phone}", ln=True)
+    pdf.cell(200, 10, txt=f"Thông tin máy:** {tool}", ln=True)
     pdf.ln(5)
-    pdf.write(10, f"Yêu cầu:\n{note}")
+    pdf.write(10, f"Tình trạng máy:\n{note}")
     
     return pdf.output()
 
@@ -49,7 +51,7 @@ if st.button("XÁC NHẬN & TẠO BIÊN BẢN"):
         # 1. Hiển thị bảng tóm tắt để khách chụp màn hình (Dành cho khách thích nhanh)
         st.markdown("---")
         st.subheader("📌 BẢN TÓM TẮT THÔNG TIN")
-        st.info(f"**Công ty:** {company}\n**Địa chỉ:** {add}\n**Tên và SDT:** {name_phone}\n**Thông tin máy:** {tool}\n**Tình trạng máy:** {note}")
+        st.info(f"**Công ty:** {company}  \n**Địa chỉ:** {add}  \n**Tên và SDT:** {name_phone}  \n**Thông tin máy:** {tool}  \n**Tình trạng máy:** {note}  ")
         st.write("👉 *Bạn có thể chụp ảnh màn hình bảng tóm tắt trên!*")
 
         # 2. Tạo nút tải PDF (Dành cho khách thích chuyên nghiệp)
@@ -58,7 +60,7 @@ if st.button("XÁC NHẬN & TẠO BIÊN BẢN"):
             st.download_button(
                 label="📥 TẢI FILE PDF CHÍNH THỨC",
                 data=bytes(pdf_data),
-                file_name=f"BIÊN BẢN NHẬN MÁY_{company}.pdf",
+                file_name=f"BIÊN BẢN NHẬN MÁY - {company}.pdf",
                 mime="application/pdf",
                 help="Bấm vào đây để lưu file PDF chất lượng cao"
             )
