@@ -38,14 +38,14 @@ st.write("Vui lòng điền thông tin, hệ thống sẽ tạo phiếu gửi ch
 
 # Phần nhập liệu
 with st.container():
-    company = st.text_input("tên công ty:")
-    add = st.text_input("địa chỉ nhận và trả máy:")
-    name_phone = st.text_input("tên và số điện thoại:")
-    tool = st.text_input("tên máy và số Seri:")
-    note = st.text_area("tình trạng máy (không hoạt động, không khoan, không đục...:")
+    company = st.text_input("Tên Công Ty:")
+    add = st.text_input("Địa chỉ nhận và trả máy:")
+    name_phone = st.text_input("Tên và số điện thoại:")
+    tool = st.text_input("Tên máy và số Seri:")
+    note = st.text_area("Tình trạng máy (không hoạt động, không khoan, không đục...):")
 
 if st.button("XÁC NHẬN & TẠO PHIẾU"):
-    if name and phone:
+    if company, add, name_phone, tool and note:
         # 1. Hiển thị bảng tóm tắt để khách chụp màn hình (Dành cho khách thích nhanh)
         st.markdown("---")
         st.subheader("📌 BẢN TÓM TẮT THÔNG TIN")
