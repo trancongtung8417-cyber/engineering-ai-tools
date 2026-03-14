@@ -38,25 +38,27 @@ st.write("Vui lòng điền thông tin, hệ thống sẽ tạo phiếu gửi ch
 
 # Phần nhập liệu
 with st.container():
-    name = st.text_input("Họ và tên của bạn:")
-    phone = st.text_input("Số điện thoại liên lạc:")
-    note = st.text_area("Nội dung chi tiết (nếu có):")
+    company = st.text_input("tên công ty:")
+    add = st.text_input("địa chỉ nhận và trả máy:")
+    name_phone = st.text_input("tên và số điện thoại:")
+    tool = st.text_input("tên máy và số Seri:")
+    note = st.text_area("tình trạng máy (không hoạt động, không khoan, không đục...:")
 
 if st.button("XÁC NHẬN & TẠO PHIẾU"):
     if name and phone:
         # 1. Hiển thị bảng tóm tắt để khách chụp màn hình (Dành cho khách thích nhanh)
         st.markdown("---")
         st.subheader("📌 BẢN TÓM TẮT THÔNG TIN")
-        st.info(f"**Họ tên:** {name}  \n**Số điện thoại:** {phone}  \n**Yêu cầu:** {note}")
+        st.info(f"**Công ty:** {company}  \n**Địa chỉ:** {add}  \n**Tên và SDT:** {name_phone}  \n**Thông tin máy:** {tool} \n**Tình trạng máy:** {note} ")
         st.write("👉 *Bạn có thể chụp ảnh màn hình bảng trên để gửi qua Zalo cho nhanh!*")
 
         # 2. Tạo nút tải PDF (Dành cho khách thích chuyên nghiệp)
         try:
-            pdf_data = create_pdf(name, phone, note)
+            pdf_data = create_pdf(company, add, name_phone, tool, note)
             st.download_button(
                 label="📥 TẢI FILE PDF CHÍNH THỨC",
                 data=bytes(pdf_data),
-                file_name=f"YeuCau_{name}.pdf",
+                file_name=f"BIÊN BẢN NHẬN MÁY - {company}.pdf",
                 mime="application/pdf",
                 help="Bấm vào đây để lưu file PDF chất lượng cao"
             )
