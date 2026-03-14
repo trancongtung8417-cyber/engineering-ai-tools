@@ -2,7 +2,7 @@ import streamlit as st
 from fpdf import FPDF
 import os
 
-def create_pdf(name, phone, note):
+def create_pdf(company, add, name_phone, tool, note):
     pdf = FPDF()
     pdf.add_page()
     
@@ -45,11 +45,11 @@ with st.container():
     note = st.text_area("Tình trạng máy (không hoạt động, không khoan, không đục...):")
 
 if st.button("XÁC NHẬN & TẠO PHIẾU"):
-    if company, add, name_phone, tool and note:
+    if add and name_phone:
         # 1. Hiển thị bảng tóm tắt để khách chụp màn hình (Dành cho khách thích nhanh)
         st.markdown("---")
         st.subheader("📌 BẢN TÓM TẮT THÔNG TIN")
-        st.info(f"**Công ty:** {company}  \n**Địa chỉ:** {add}  \n**Tên và SDT:** {name_phone}  \n**Thông tin máy:** {tool} \n**Tình trạng máy:** {note} ")
+        st.info(f"**Công ty:** {company}  \n**Địa chỉ:** {add}  \n**Tên và SDT:** {name_phone}  \n**Thông tin máy:** {tool} \n**Tình trạng máy:** {note} \n")
         st.write("👉 *Bạn có thể chụp ảnh màn hình bảng trên để gửi qua Zalo cho nhanh!*")
 
         # 2. Tạo nút tải PDF (Dành cho khách thích chuyên nghiệp)
