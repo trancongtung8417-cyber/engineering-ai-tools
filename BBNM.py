@@ -44,13 +44,13 @@ with st.container():
     tool = st.text_input("Tên máy và số Seri:")
     note = st.text_area("Tình trạng máy (không hoạt động, không khoan, không đục...):")
 
-if st.button("XÁC NHẬN & TẠO PHIẾU"):
+if st.button("XÁC NHẬN & TẠO BIÊN BẢN"):
     if add and name_phone:
         # 1. Hiển thị bảng tóm tắt để khách chụp màn hình (Dành cho khách thích nhanh)
         st.markdown("---")
         st.subheader("📌 BẢN TÓM TẮT THÔNG TIN")
-        st.info(f"**Công ty:** {company}  \n**Địa chỉ:** {add}  \n**Tên và SDT:** {name_phone}  \n**Thông tin máy:** {tool} \n**Tình trạng máy:** {note} \n")
-        st.write("👉 *Bạn có thể chụp ảnh màn hình bảng trên để gửi qua Zalo cho nhanh!*")
+        st.info(f"**Công ty:** {company}\n**Địa chỉ:** {add}\n**Tên và SDT:** {name_phone}\n**Thông tin máy:** {tool}\n**Tình trạng máy:** {note}")
+        st.write("👉 *Bạn có thể chụp ảnh màn hình bảng tóm tắt trên!*")
 
         # 2. Tạo nút tải PDF (Dành cho khách thích chuyên nghiệp)
         try:
@@ -58,7 +58,7 @@ if st.button("XÁC NHẬN & TẠO PHIẾU"):
             st.download_button(
                 label="📥 TẢI FILE PDF CHÍNH THỨC",
                 data=bytes(pdf_data),
-                file_name=f"BIÊN BẢN NHẬN MÁY - {company}.pdf",
+                file_name=f"BIÊN BẢN NHẬN MÁY_{company}.pdf",
                 mime="application/pdf",
                 help="Bấm vào đây để lưu file PDF chất lượng cao"
             )
