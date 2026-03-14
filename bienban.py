@@ -30,7 +30,7 @@ def create_pdf(company, add, name_phone, tool, note):
     pdf.cell(0, 15, txt="BIÊN BẢN NHẬN MÁY", ln=True, align='C')
     
     # Dòng kẻ trang trí dưới tiêu đề
-    pdf.set_draw_color(220, 0, 0)
+    pdf.set_draw_color(150, 150, 150)
     pdf.line(70, 32, 140, 32)
     pdf.ln(15)
 
@@ -123,6 +123,7 @@ if st.button("XÁC NHẬN & TẠO PHIẾU"):
         # Bảng tóm tắt hiển thị đẹp mắt
         st.success("✅ Thông tin đã được ghi nhận!")
         with st.expander("👉 NHẤN VÀO ĐÂY ĐỂ XEM TÓM TẮT", expanded=True):
+            st.write(f"**Công ty:** {company}")
             st.write(f"**Khách hàng:** {name_phone}")
             st.write(f"**Địa chỉ:** {add}")
             st.write(f"**Thiết bị:** {tool}")
