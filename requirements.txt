@@ -1,8 +1,7 @@
 streamlit
 groq
 pandas
-python-docx
-PyPDF2
-requests
-fpdf2	
 st-gsheets-connection
+python-docx
+requests
+fpdf2
