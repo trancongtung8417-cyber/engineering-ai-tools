@@ -4,4 +4,5 @@ pandas
 python-docx
 PyPDF2
 requests
-fpdf2
+fpdf2	
+st-gsheets-connection
