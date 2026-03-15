@@ -15,7 +15,7 @@ conn = st.connection("gsheets", type=GSheetsConnection)
     return conn.read(spreadsheet=url, worksheet="Sheet1", ttl=5)
 
 def load_data():
-    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1abcXYZ123456/edit"
+    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1ggWWPxqe8zjM7Ydp0BE7KaUB1qG87qahq0EVJbCjGZM/edit?gid=0#gid=0"
     df = conn.read(
         spreadsheet=spreadsheet_url,
         worksheet="Sheet1"
