@@ -25,7 +25,7 @@ df = load_data()
 st.write(df)
 
 #def load_data():
-    return conn.read(worksheet="Sheet1", ttl=5)
+    #return conn.read(worksheet="Sheet1", ttl=5)
 
 # --- GIAO DIỆN CHÍNH ---
 st.title("🍹 Quản Lý Tiệm Trà Thông Minh")
