@@ -10,10 +10,20 @@ st.set_page_config(page_title="Hệ thống Tiệm Trà AI", page_icon="🍹", l
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Hàm đọc dữ liệu (tự động cập nhật sau 5 giây nếu có thay đổi)
-def load_data():
+#def load_data():
     url = "https://docs.google.com/spreadsheets/d/1ggWWPxqe8zjM7Ydp0BE7KaUB1qG87qahq0EVJbCjGZM/edit?gid=0#gid=0"
     return conn.read(spreadsheet=url, worksheet="Sheet1", ttl=5)
-    
+
+def load_data():
+    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1abcXYZ123456/edit"
+    df = conn.read(
+        spreadsheet=spreadsheet_url,
+        worksheet="Sheet1"
+    )
+    return df
+df = load_data()
+st.write(df)
+
 #def load_data():
     return conn.read(worksheet="Sheet1", ttl=5)
 
