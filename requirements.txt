@@ -1,7 +1,10 @@
 streamlit
-groq
 pandas
+supabase
+openpyxl
 st-gsheets-connection
 python-docx
 requests
+groq
 fpdf2
+PyPDF2
