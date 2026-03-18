@@ -153,14 +153,25 @@ else:
                     col_m1, col_m2 = st.columns(2)
                     with col_m1:
                         m_target = st.selectbox("Chọn khách hàng", df_cust['username'])
+                        
+                        # Ô nhập số tiền
                         m_amt = st.number_input("Số tiền (VND)", min_value=0, step=10000, format="%d")
-                        st.caption(f"Kiểm tra số tiền: **{format_vn_currency(m_amt)}**")
+                        
+                        # --- DÒNG HIỂN THỊ CÓ DẤU CHẤM ĐỂ ANH KIỂM TRA ---
+                        if m_amt > 0:
+                            st.info(f"💰 Số tiền đang nhập: **{format_vn_currency(m_amt)}**")
+                        else:
+                            st.caption("Nhập số tiền để kiểm tra định dạng.")
+                            
                     with col_m2:
                         m_act = st.radio("Loại giao dịch", ["Nạp tiền", "Trừ tiền"])
                         m_reason = st.text_input("Nội dung (VD: Massage đá nóng, Nạp thẻ...)")
                     
                     if st.form_submit_button("Xác nhận Giao dịch", use_container_width=True):
-                        if not m_reason: st.warning("Vui lòng nhập lý do/nội dung.")
+                        if not m_reason: 
+                            st.warning("Vui lòng nhập lý do/nội dung.")
+                        elif m_amt <= 0:
+                            st.warning("Vui lòng nhập số tiền lớn hơn 0.")
                         else:
                             u_now = fetch_user(m_target)
                             new_b = u_now['balance'] + m_amt if m_act == "Nạp tiền" else u_now['balance'] - m_amt
@@ -168,7 +179,8 @@ else:
                             add_history(m_target, m_amt, m_act, m_reason)
                             st.success(f"Thành công! Số dư mới: {format_vn_currency(new_b)}")
                             st.rerun()
-            else: st.write("Chưa có khách hàng nào.")
+            else: 
+                st.write("Chưa có khách hàng nào.")
 
         # TAB 3: BÁO CÁO
         with t3:
