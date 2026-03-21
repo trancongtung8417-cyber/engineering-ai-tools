@@ -5,9 +5,9 @@ import requests
 
 # --- CẤU HÌNH THÔNG TIN QUẢN LÝ ---
 # Thay đổi các thông số dưới đây theo thông tin của bạn
-ZALO_PHONE = "0901234567"  
-TELEGRAM_TOKEN = "7500000000:AAxxxx..." 
-TELEGRAM_CHAT_ID = "12345678"
+ZALO_PHONE = "0908080163"  
+TELEGRAM_TOKEN = "8647065958:AAEt8IxfNG_zH5POVxf02_DacVdzuGyHaKE" 
+TELEGRAM_CHAT_ID = "1855505540"
 
 # --- HÀM GỬI FILE QUA TELEGRAM ---
 def send_to_telegram(file_data, filename, caption):
@@ -146,7 +146,7 @@ if st.button("XÁC NHẬN & TẠO PHIẾU"):
             )
             
             # 3. Nút bấm mở Zalo nhanh
-            zalo_link = f"https://zalo.me/{0908080163}"
+            zalo_link = f"https://zalo.me/{ZALO_PHONE}"
             st.markdown(f"""
                 <a href="{zalo_link}" target="_blank" style="text-decoration: none;">
                     <div style="background-color: #0068ff; color: white; text-align: center; padding: 15px; border-radius: 10px; font-weight: bold; margin-top: 10px;">
