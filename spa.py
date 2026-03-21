@@ -122,28 +122,53 @@ else:
                     update_user_field(t_lock, "status", "Active"); st.rerun()
 
         with tab2:
-            st.subheader("Thực hiện Giao dịch")
+            st.subheader("Thực hiện Giao dịch & Chi tiết khách")
             custs = all_u[all_u['role'] == 'Customer']
             if not custs.empty:
-                m_target = st.selectbox("Chọn khách", custs['username'])
+                m_target = st.selectbox("Chọn khách hàng", custs['username'])
+                
+                # Lấy dữ liệu chi tiết khách hàng được chọn
                 u_detail = fetch_user(m_target)
-                st.write(f"📞 **SĐT:** {u_detail.get('phone', 'Chưa có')} | 📝 **Ghi chú:** {u_detail.get('note', 'Trống')}")
                 history_target = get_history(m_target)
+                
+                # --- PHẦN 1: THÔNG TIN CƠ BẢN & NGÀY TẠO ---
+                # Chuyển đổi ngày tạo sang định dạng VN
+                created_dt = pd.to_datetime(u_detail['created_at']).tz_convert('Asia/Ho_Chi_Minh').strftime('%d/%m/%Y')
+                
+                st.write(f"📞 **SĐT:** {u_detail.get('phone', 'Chưa có')} | 📝 **Ghi chú:** {u_detail.get('note', 'Trống')} | 📅 **Ngày tham gia:** {created_dt}")
+                
+                # --- PHẦN 2: CHỈ SỐ TÀI CHÍNH ---
                 total_in = history_target[history_target['action_type'] == 'Nạp tiền']['amount'].sum() if not history_target.empty else 0
                 total_out = history_target[history_target['action_type'] == 'Trừ tiền']['amount'].sum() if not history_target.empty else 0
-                current_bal = u_detail['balance']
+                current_bal = float(u_detail['balance'])
+                
                 sk1, sk2, sk3 = st.columns(3)
                 sk1.metric("Tổng nạp", format_vn_currency(total_in))
                 sk2.metric("Tổng đã dùng", format_vn_currency(total_out))
                 sk3.metric("Số dư hiện tại", format_vn_currency(current_bal))
+                
+                # --- PHẦN 3: LỊCH SỬ GIAO DỊCH RIÊNG CỦA KHÁCH ---
+                with st.expander(f"📜 Xem lịch sử giao dịch của {m_target}", expanded=False):
+                    if not history_target.empty:
+                        # Format lại bảng lịch sử cho dễ nhìn
+                        df_mini = history_target.copy()
+                        df_mini['Thời gian'] = pd.to_datetime(df_mini['created_at']).dt.tz_convert('Asia/Ho_Chi_Minh').dt.strftime('%d/%m/%Y %H:%M')
+                        df_mini['Số tiền'] = df_mini['amount'].apply(format_vn_currency)
+                        st.dataframe(df_mini[['Thời gian', 'action_type', 'Số tiền', 'reason']], use_container_width=True, hide_index=True)
+                    else:
+                        st.info("Khách hàng này chưa có giao dịch nào.")
+
                 st.divider()
+
+                # --- PHẦN 4: FORM NHẬP GIAO DỊCH MỚI ---
                 col_m1, col_m2 = st.columns(2)
                 with col_m1:
-                    m_amt = st.number_input("Số tiền (VND)", min_value=0, step=10000, format="%d")
+                    m_amt = st.number_input("Số tiền giao dịch (VND)", min_value=0, step=10000, format="%d")
                     st.info(f"💰 Đang nhập: **{format_vn_currency(m_amt)}**")
                 with col_m2:
                     m_act = st.radio("Loại giao dịch", ["Nạp tiền", "Trừ tiền"])
-                    m_reason = st.text_input("Nội dung dịch vụ")
+                    m_reason = st.text_input("Nội dung dịch vụ", placeholder="Ví dụ: Massage body, Nạp thẻ VIP...")
+                
                 if st.button("Xác nhận Giao dịch", use_container_width=True, type="primary"):
                     if not m_reason: st.warning("Vui lòng nhập nội dung!")
                     elif m_amt <= 0: st.warning("Vui lòng nhập số tiền!")
@@ -151,8 +176,10 @@ else:
                         new_bal = current_bal + m_amt if m_act == "Nạp tiền" else current_bal - m_amt
                         update_user_field(m_target, "balance", new_bal)
                         add_history(m_target, m_amt, m_act, m_reason)
-                        st.success(f"Đã cập nhật cho {m_target}!")
+                        st.success(f"Đã cập nhật thành công cho khách {m_target}!")
                         st.rerun()
+            else:
+                st.info("Chưa có tài khoản khách hàng nào trong hệ thống.")
 
         with tab3:
             st.subheader("Báo cáo tổng hợp")
@@ -184,29 +211,6 @@ else:
                 with st.container(border=True):
                     st.write("Để tránh gián đoạn dịch vụ, vui lòng nạp thêm tiền")
 
-            # if balance < 100000:
-            #     st.divider()
-            #     # Tạo khung cảnh báo màu vàng
-            #     with st.warning("⚠️ **THÔNG BÁO: Số dư tài khoản của quý khách hiện đang dưới 100.000 VND.**"):
-            #         st.write("Để tránh gián đoạn dịch vụ, vui lòng thực hiện nạp thêm tiền theo thông tin dưới đây:")
-                    
-                    # # Chia 2 cột để hiện Link và QR
-                    # col_info1, col_info2 = st.columns([2, 1])
-                    
-                #     with col_info1:
-                #         st.write("🔗 **Đường link nạp tiền:**")
-                #         # Hiện link có thể nhấn được
-                #         st.markdown(f"[{C_LINK}]({C_LINK})")
-                #         st.caption("(Nhấn vào link để mở trang nạp tiền/liên hệ)")
-                        
-                #     with col_info2:
-                #         st.write("📲 **Mã QR nạp tiền:**")
-                #         # Hiện ảnh QR (Sử dụng use_container_width=True để ảnh vừa khung)
-                #         if C_QR and C_QR.strip():
-                #             st.image(C_QR, caption="Quét mã để nạp tiền", use_container_width=True)
-                #         else:
-                #             st.caption("(Chưa cấu hình mã QR)")
-                # st.divider()
             
             # --- LỊCH SỬ DỊCH VỤ CỦA KHÁCH ---
             st.subheader("📜 Nhật ký sử dụng dịch vụ")
