@@ -26,7 +26,7 @@ with st.form("receipt_form", clear_on_submit=True):
 
     status = st.text_area("Tình trạng máy (ví dụ: không hoạt động, không khoan...):")
     
-    submitted = st.form_submit_with_button("Gửi thông tin & Tạo biên bản")
+    submitted = st.form_submit_button("Gửi thông tin & Tạo biên bản", type="primary")
 
 if submitted:
     if not company or not phone or not device:
