@@ -182,12 +182,74 @@ else:
                 st.info("Chưa có tài khoản khách hàng nào trong hệ thống.")
 
         with tab3:
-            st.subheader("Báo cáo tổng hợp")
-            df_h = get_history()
-            if not df_h.empty:
-                st.write(f"📈 **Tổng nạp:** {format_vn_currency(df_h[df_h['action_type'] == 'Nạp tiền']['amount'].sum())} | 📉 **Tổng tiêu:** {format_vn_currency(df_h[df_h['action_type'] == 'Trừ tiền']['amount'].sum())}")
-                df_h['created_at'] = pd.to_datetime(df_h['created_at']).dt.tz_convert('Asia/Ho_Chi_Minh').dt.strftime('%d/%m/%Y %H:%M')
-                st.dataframe(df_h[['created_at', 'username', 'action_type', 'amount', 'reason']], use_container_width=True)
+            st.subheader("📊 Báo cáo tổng hợp hệ thống")
+            
+            # --- PHẦN 1: THỐNG KÊ NHANH (METRICS) ---
+            df_all_h = get_history()
+            col_stat1, col_stat2, col_stat3 = st.columns(3)
+            
+            if not df_all_h.empty:
+                total_nạp = df_all_h[df_all_h['action_type'] == 'Nạp tiền']['amount'].sum()
+                total_tiêu = df_all_h[df_all_h['action_type'] == 'Trừ tiền']['amount'].sum()
+                
+                col_stat1.metric("Tổng doanh thu (Nạp)", format_vn_currency(total_nạp))
+                col_stat2.metric("Tổng dịch vụ đã cung cấp", format_vn_currency(total_tiêu), delta_color="inverse")
+                col_stat3.metric("Số dư khách còn giữ", format_vn_currency(total_nạp - total_tiêu))
+            
+            st.divider()
+
+            # --- PHẦN 2: BẢNG THÔNG TIN TẤT CẢ KHÁCH HÀNG ---
+            st.markdown("### 👥 Danh sách chi tiết khách hàng")
+            
+            # Lấy toàn bộ user là Customer
+            df_customers = all_u[all_u['role'] == 'Customer'].copy()
+            
+            if not df_customers.empty:
+                # Xử lý hiển thị cho đẹp
+                df_report = df_customers.rename(columns={
+                    'username': 'Tên khách hàng',
+                    'phone': 'Số điện thoại',
+                    'balance': 'Số dư hiện tại',
+                    'status': 'Trạng thái',
+                    'note': 'Ghi chú/Bệnh lý'
+                })
+                
+                # Format cột tiền để xem trên web
+                df_report_display = df_report.copy()
+                df_report_display['Số dư hiện tại'] = df_report_display['Số dư hiện tại'].apply(format_vn_currency)
+                
+                st.dataframe(df_report_display[['Tên khách hàng', 'Số điện thoại', 'Số dư hiện tại', 'Trạng thái', 'Ghi chú/Bệnh lý']], use_container_width=True, hide_index=True)
+                
+                # --- PHẦN 3: NÚT TẢI FILE BÁO CÁO (EXCEL/CSV) ---
+                # Tạo dữ liệu CSV để tải về
+                csv = df_report.to_csv(index=False).encode('utf-8-sig') # utf-8-sig để không lỗi font tiếng Việt
+                
+                st.download_button(
+                    label="📥 Tải về danh sách khách hàng (File CSV)",
+                    data=csv,
+                    file_name=f"bao_cao_khach_hang_{datetime.now().strftime('%d_%m_%Y')}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+            else:
+                st.info("Chưa có dữ liệu khách hàng.")
+
+            st.divider()
+
+            # --- PHẦN 4: LỊCH SỬ TOÀN BỘ GIAO DỊCH ---
+            st.markdown("### 📜 Toàn bộ lịch sử giao dịch")
+            if not df_all_h.empty:
+                df_all_h['Thời gian'] = pd.to_datetime(df_all_h['created_at']).dt.tz_convert('Asia/Ho_Chi_Minh').dt.strftime('%d/%m/%Y %H:%M')
+                df_all_h_disp = df_all_h.copy()
+                df_all_h_disp['Số tiền'] = df_all_h_disp['amount'].apply(format_vn_currency)
+                
+                st.dataframe(
+                    df_all_h_disp[['Thời gian', 'username', 'action_type', 'Số tiền', 'reason']].rename(columns={'username': 'Khách hàng', 'action_type': 'Loại'}),
+                    use_container_width=True,
+                    hide_index=True
+                )
+            else:
+                st.info("Chưa có lịch sử giao dịch nào.")
 
     # ==========================================
     # GIAO DIỆN KHÁCH HÀNG (CUSTOMER) - MỚI
