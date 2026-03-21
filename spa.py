@@ -51,7 +51,7 @@ if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    st.title("🌿 Hệ Thống Quản Lý Spa & Massage")
+    st.title("🌿 Green Life Spa")
     u_in = st.text_input("Tên đăng nhập")
     p_in = st.text_input("Mật khẩu", type="password")
     if st.button("Đăng nhập", use_container_width=True, type="primary"):
@@ -182,23 +182,23 @@ else:
                 with st.warning("⚠️ **THÔNG BÁO: Số dư tài khoản của quý khách hiện đang dưới 100.000 VND.**"):
                     st.write("Để tránh gián đoạn dịch vụ, vui lòng thực hiện nạp thêm tiền theo thông tin dưới đây:")
                     
-                    # Chia 2 cột để hiện Link và QR
-                    col_info1, col_info2 = st.columns([2, 1])
+                    # # Chia 2 cột để hiện Link và QR
+                    # col_info1, col_info2 = st.columns([2, 1])
                     
-                    with col_info1:
-                        st.write("🔗 **Đường link nạp tiền:**")
-                        # Hiện link có thể nhấn được
-                        st.markdown(f"[{C_LINK}]({C_LINK})")
-                        st.caption("(Nhấn vào link để mở trang nạp tiền/liên hệ)")
+                #     with col_info1:
+                #         st.write("🔗 **Đường link nạp tiền:**")
+                #         # Hiện link có thể nhấn được
+                #         st.markdown(f"[{C_LINK}]({C_LINK})")
+                #         st.caption("(Nhấn vào link để mở trang nạp tiền/liên hệ)")
                         
-                    with col_info2:
-                        st.write("📲 **Mã QR nạp tiền:**")
-                        # Hiện ảnh QR (Sử dụng use_container_width=True để ảnh vừa khung)
-                        if C_QR and C_QR.strip():
-                            st.image(C_QR, caption="Quét mã để nạp tiền", use_container_width=True)
-                        else:
-                            st.caption("(Chưa cấu hình mã QR)")
-                st.divider()
+                #     with col_info2:
+                #         st.write("📲 **Mã QR nạp tiền:**")
+                #         # Hiện ảnh QR (Sử dụng use_container_width=True để ảnh vừa khung)
+                #         if C_QR and C_QR.strip():
+                #             st.image(C_QR, caption="Quét mã để nạp tiền", use_container_width=True)
+                #         else:
+                #             st.caption("(Chưa cấu hình mã QR)")
+                # st.divider()
             
             # --- LỊCH SỬ DỊCH VỤ CỦA KHÁCH ---
             st.subheader("📜 Nhật ký sử dụng dịch vụ")
