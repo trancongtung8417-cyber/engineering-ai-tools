@@ -146,7 +146,7 @@ if st.button("XÁC NHẬN & TẠO PHIẾU"):
             )
             
             # 3. Nút bấm mở Zalo nhanh
-            zalo_link = f"https://zalo.me/{ZALO_PHONE}"
+            zalo_link = f"https://zalo.me/{0908080163}"
             st.markdown(f"""
                 <a href="{zalo_link}" target="_blank" style="text-decoration: none;">
                     <div style="background-color: #0068ff; color: white; text-align: center; padding: 15px; border-radius: 10px; font-weight: bold; margin-top: 10px;">
