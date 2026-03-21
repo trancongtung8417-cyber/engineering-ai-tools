@@ -49,7 +49,7 @@ def create_pdf(company, add, name_phone, tool, note):
     
     pdf.ln(5)
     pdf.set_font('Vietnamese', size=12)
-    pdf.cell(0, 10, txt="Tình trạng máy (không hoạt động, không khoan, không đục...:", ln=True)
+    pdf.cell(0, 10, txt="Tình trạng máy (không hoạt động, không khoan, không đục...):", ln=True)
     pdf.set_font('Vietnamese', size=11)
     pdf.multi_cell(0, 10, txt=note, border=1)
 
@@ -96,7 +96,7 @@ with st.container():
     add = st.text_input("📍 Địa chỉ nhận và trả máy:")
     name_phone = st.text_input("👤 Người gửi và Số điện thoại:")
     tool = st.text_input("🛠️ Tên máy và số Seri:")
-    note = st.text_area("⚠️ Tình trạng hư hỏng của máy:")
+    note = st.text_area("⚠️ Tình trạng hư hỏng của máy (không hoạt động, không khoan, không đục...):")
 
 st.markdown("---")
 
