@@ -273,6 +273,23 @@ else:
                 with st.container(border=True):
                     st.write("Để tránh gián đoạn dịch vụ, vui lòng nạp thêm tiền")
 
+                    # Chia 2 cột để hiện Link và QR
+                    col_info1, col_info2 = st.columns([2, 1])
+                    
+                    with col_info1:
+                        st.write("🔗 **Đường link nạp tiền:**")
+                        # Hiện link có thể nhấn được
+                        st.markdown(f"[{C_LINK}]({C_LINK})")
+                        st.caption("(Nhấn vào link để mở trang nạp tiền/liên hệ)")
+                        
+                    with col_info2:
+                        st.write("📲 **Mã QR nạp tiền:**")
+                        # Hiện ảnh QR (Sử dụng use_container_width=True để ảnh vừa khung)
+                        if C_QR and C_QR.strip():
+                            st.image(C_QR, caption="Quét mã để nạp tiền", use_container_width=True)
+                        else:
+                            st.caption("(Chưa cấu hình mã QR)")
+                st.divider()
             
             # --- LỊCH SỬ DỊCH VỤ CỦA KHÁCH ---
             st.subheader("📜 Nhật ký sử dụng dịch vụ")
