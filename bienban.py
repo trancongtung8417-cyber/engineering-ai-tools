@@ -49,7 +49,7 @@ def create_pdf(company, add, name_phone, tool, note):
     
     pdf.ln(5)
     pdf.set_font('Vietnamese', size=12)
-    pdf.cell(0, 10, txt="Tình trạng máy khi tiếp nhận:", ln=True)
+    pdf.cell(0, 10, txt="Tình trạng máy (không hoạt động, không khoan, không đục...:", ln=True)
     pdf.set_font('Vietnamese', size=11)
     pdf.multi_cell(0, 10, txt=note, border=1)
 
