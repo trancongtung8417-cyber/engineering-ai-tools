@@ -177,10 +177,18 @@ else:
             
             # --- PHẦN CẢNH BÁO SỐ DƯ THẤP (< 100.000 VND) ---
             if balance < 100000:
-                st.divider()
-                # Tạo khung cảnh báo màu vàng
-                with st.warning("⚠️ **THÔNG BÁO: Số dư tài khoản của quý khách hiện đang dưới 100.000 VND.**"):
-                    st.write("Để tránh gián đoạn dịch vụ, vui lòng thực hiện nạp thêm tiền theo thông tin dưới đây:")
+                st.write("") # Tạo khoảng cách nhẹ
+                # Dùng st.warning để tạo khung màu vàng nổi bật
+                st.warning(f"⚠️ **THÔNG BÁO: Số dư của quý khách hiện là {format_vn_currency(balance)}.**")
+                
+                with st.container(border=True):
+                    st.write("Để tránh gián đoạn dịch vụ, vui lòng nạp thêm tiền")
+
+            # if balance < 100000:
+            #     st.divider()
+            #     # Tạo khung cảnh báo màu vàng
+            #     with st.warning("⚠️ **THÔNG BÁO: Số dư tài khoản của quý khách hiện đang dưới 100.000 VND.**"):
+            #         st.write("Để tránh gián đoạn dịch vụ, vui lòng thực hiện nạp thêm tiền theo thông tin dưới đây:")
                     
                     # # Chia 2 cột để hiện Link và QR
                     # col_info1, col_info2 = st.columns([2, 1])
