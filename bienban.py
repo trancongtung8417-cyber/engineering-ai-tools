@@ -2,20 +2,21 @@ import streamlit as st
 from fpdf import FPDF
 import os
 
-# --- HÀM TẠO PDF CHUYÊN NGHIỆP ---
+# --- 3. HÀM TẠO PDF CHUYÊN NGHIỆP CÓ LOGO ---
 def create_pdf(company, add, name_phone, tool, note):
-    # Khởi tạo PDF khổ A4
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.add_page()
     
-    # 1. Vẽ khung viền trang trí (Border)
+    # Vẽ khung viền trang trí
     pdf.set_line_width(0.5)
-    pdf.set_draw_color(150, 150, 150) # Màu đỏ Hilti cho khung
-    pdf.rect(7, 7, 196, 283) # Khung ngoài
-    pdf.set_line_width(0.2)
-    pdf.rect(8, 8, 194, 281) # Khung trong tạo hiệu ứng viền đôi
+    pdf.set_draw_color(150, 150, 150) 
+    pdf.rect(7, 7, 196, 283) 
 
-    # 2. Cài đặt Font
+    # Chèn Logo vào PDF nếu có file
+    if os.path.exists("logo.png"):
+        pdf.image("logo.png", x=10, y=10, w=30)
+
+    # Cài đặt Font
     font_path = "Roboto-Regular.ttf"
     if os.path.exists(font_path):
         pdf.add_font('Vietnamese', '', font_path)
@@ -23,26 +24,20 @@ def create_pdf(company, add, name_phone, tool, note):
     else:
         pdf.set_font("Helvetica", size=12)
 
-    # 3. Tiêu đề
-    pdf.ln(10)
+    # Tiêu đề
+    pdf.ln(20)
     pdf.set_text_color(220, 0, 0)
     pdf.set_font('Vietnamese', size=22)
     pdf.cell(0, 15, txt="BIÊN BẢN NHẬN MÁY", ln=True, align='C')
-    
-    # Dòng kẻ trang trí dưới tiêu đề
-    pdf.set_draw_color(150, 150, 150)
-    pdf.line(70, 32, 140, 32)
-    pdf.ln(15)
+    pdf.ln(10)
 
-    # 4. Nội dung thông tin (Bố cục dạng bảng)
+    # Nội dung thông tin
     pdf.set_text_color(0, 0, 0)
-    pdf.set_font('Vietnamese', size=12)
-    
     def add_info_row(label, value):
         pdf.set_font('Vietnamese', size=11)
-        pdf.set_text_color(100, 100, 100) # Màu xám cho nhãn
+        pdf.set_text_color(100, 100, 100)
         pdf.cell(50, 10, txt=f"{label}:", border='B', ln=0)
-        pdf.set_text_color(0, 0, 0) # Màu đen cho giá trị
+        pdf.set_text_color(0, 0, 0)
         pdf.set_font('Vietnamese', size=12)
         pdf.cell(0, 10, txt=f" {value}", border='B', ln=True)
         pdf.ln(2)
@@ -51,15 +46,12 @@ def create_pdf(company, add, name_phone, tool, note):
     add_info_row("Địa chỉ giao nhận", add)
     add_info_row("Người gửi & Số ĐT", name_phone)
     add_info_row("Thiết bị & Số Seri", tool)
-    add_info_row("Tình trạng máy", note)
-
-    # 5. Phần tình trạng máy (Khung ghi chú lớn)
-    #pdf.ln(5)
-    #pdf.set_font('Vietnamese', size=12)
-    #pdf.set_fill_color(240, 240, 240)
-    #pdf.cell(0, 10, txt=" Tình trạng máy khi tiếp nhận:", ln=True, fill=True)
-    #pdf.set_font('Vietnamese', size=11)
-    #pdf.multi_cell(0, 10, txt=note, border=1)
+    
+    pdf.ln(5)
+    pdf.set_font('Vietnamese', size=12)
+    pdf.cell(0, 10, txt="Tình trạng máy khi tiếp nhận:", ln=True)
+    pdf.set_font('Vietnamese', size=11)
+    pdf.multi_cell(0, 10, txt=note, border=1)
 
     return pdf.output()
 
