@@ -2,9 +2,9 @@ import streamlit as st
 from supabase import create_client, Client
 
 # Cấu hình Supabase (Lấy URL và Key trong phần Project Settings)
-url = "YOUR_SUPABASE_URL"
-key = "YOUR_SUPABASE_ANON_KEY"
-supabase: Client = create_client(url, key)
+# url = "YOUR_SUPABASE_URL"
+# key = "YOUR_SUPABASE_ANON_KEY"
+# supabase: Client = create_client(url, key)
 
 st.set_page_config(page_title="Hilti - Biên Bản Nhận Máy", page_icon="🛠️")
 
