@@ -15,39 +15,48 @@ except Exception as e:
     st.error(f"⚠️ Lỗi cấu hình Secrets: {e}")
     st.stop()
 
-# --- 3. CSS GIAO DIỆN (VIỀN XÁM, THÔNG TIN THẤP, KHÔNG NGÀY GIỜ) ---
+# --- 3. CSS GIAO DIỆN ---
 st.markdown("""
     <style>
     div.stButton > button:first-child { background-color: #DD2222 !important; color: white !important; border: none; }
     
     .receipt-container {
-        padding: 40px; 
+        padding: 30px; 
         background-color: #FFFFFF;
-        border: 1px solid #E0E0E0;
-        border-radius: 10px;
     }
 
+    /* Tiêu đề nằm trong khung xám, cách xa logo */
     .header-box-gray {
         border: 2px solid #808080; 
-        padding: 15px;
+        padding: 20px;
         border-radius: 10px;
         text-align: center;
-        margin-top: 50px; /* Đẩy xuống thấp xa logo */
-        margin-bottom: 30px;
+        margin-top: 60px; 
+        margin-bottom: 40px;
     }
     
-    .header-text-red { color: #DD2222; font-size: 1.8rem; font-weight: bold; margin: 0; }
+    .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
 
+    /* Layout thông tin: Nhãn và Giá trị nằm sát nhau ở đầu hàng */
     .info-row {
         border-bottom: 1px solid #E0E0E0;
         padding: 12px 0;
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+    }
+    .info-label {
+        width: 120px; /* Độ rộng cố định cho nhãn để thẳng hàng */
+        font-weight: bold;
+        color: #333;
+    }
+    .info-value {
+        color: #000;
+        margin-left: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. HÀM TẠO PDF (BỎ NGÀY GIỜ, VIỀN XÁM) ---
+# --- 4. HÀM TẠO PDF ---
 def generate_pdf(data):
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.add_page()
@@ -59,25 +68,22 @@ def generate_pdf(data):
     else:
         pdf.set_font('Helvetica', '', 12)
 
-    # 1. Logo Hilti
     if os.path.exists("hilti_logo.png"):
         pdf.image("hilti_logo.png", x=10, y=10, w=30)
     
-    # 2. Tiêu đề - Khung xám, đẩy xuống thấp (y=45)
-    pdf.set_y(45) 
+    # Tiêu đề khung xám
+    pdf.set_y(50) 
     pdf.set_draw_color(128, 128, 128) 
-    pdf.set_line_width(0.5)
-    pdf.rect(10, 45, 190, 15)
-    
+    pdf.rect(10, 50, 190, 18)
     pdf.set_text_color(221, 34, 34) 
-    pdf.set_xy(10, 47.5)
-    pdf.set_font('Roboto', '', 18)
+    pdf.set_xy(10, 54)
+    pdf.set_font('Roboto', '', 20)
     pdf.cell(190, 10, 'BIÊN BẢN NHẬN MÁY', ln=True, align='C')
     
-    # 3. Nội dung - Kẻ dòng xám
-    pdf.ln(20)
+    # Nội dung PDF - Căn lề đầu hàng
+    pdf.ln(25)
     pdf.set_text_color(0, 0, 0)
-    pdf.set_font('Roboto', '', 11)
+    pdf.set_font('Roboto', '', 12)
     pdf.set_draw_color(224, 224, 224) 
     
     fields = [
@@ -90,14 +96,14 @@ def generate_pdf(data):
     ]
     
     for label, value in fields:
-        pdf.cell(45, 12, label, border='B')
-        pdf.cell(145, 12, str(value), border='B', ln=True)
+        pdf.cell(35, 12, label, border='B')
+        pdf.cell(155, 12, str(value), border='B', ln=True)
         
-    pdf.ln(8)
-    pdf.cell(45, 10, "Tình trạng:", border=0)
-    pdf.multi_cell(145, 10, str(data['status']), border=0)
-    
-    # BỎ PHẦN NGÀY LẬP Ở ĐÂY
+    pdf.ln(10)
+    pdf.set_font('Roboto', '', 12, 'B')
+    pdf.cell(0, 10, "Tình trạng máy:", ln=True)
+    pdf.set_font('Roboto', '', 12)
+    pdf.multi_cell(0, 10, str(data['status']))
     
     return bytes(pdf.output())
 
@@ -110,20 +116,19 @@ if st.session_state['form_submitted']:
     
     st.markdown('<div class="receipt-container">', unsafe_allow_html=True)
     if os.path.exists("hilti_logo.png"):
-        st.image("hilti_logo.png", width=100)
+        st.image("hilti_logo.png", width=120)
     
     st.markdown(f'<div class="header-box-gray"><h1 class="header-text-red">BIÊN BẢN NHẬN MÁY</h1></div>', unsafe_allow_html=True)
     
-    # Hiển thị thông tin kẻ dòng xám
-    st.markdown(f'<div class="info-row"><span>🏢 <b>Đơn vị:</b></span> <span>{d["company_name"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span>📍 <b>Địa chỉ:</b></span> <span>{d["address"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span>👤 <b>Người gửi:</b></span> <span>{d["sender_name"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span>📞 <b>SĐT:</b></span> <span>{d["phone"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span>🛠️ <b>Thiết bị:</b></span> <span>{d["device_name"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span>🔢 <b>Seri:</b></span> <span>{d["serial_number"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div style="padding: 15px 0;"><b>📋 Tình trạng:</b><br>{d["status"]}</div>', unsafe_allow_html=True)
+    # Thông tin hiển thị (Căn sát đầu hàng)
+    st.markdown(f'<div class="info-row"><span class="info-label">🏢 Đơn vị:</span><span class="info-value">{d["company_name"]}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><span class="info-label">📍 Địa chỉ:</span><span class="info-value">{d["address"]}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><span class="info-label">👤 Người gửi:</span><span class="info-value">{d["sender_name"]}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><span class="info-label">📞 SĐT:</span><span class="info-value">{d["phone"]}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><span class="info-label">🛠️ Thiết bị:</span><span class="info-value">{d["device_name"]}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><span class="info-label">🔢 Số Seri:</span><span class="info-value">{d["serial_number"]}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="padding: 20px 0;"><b>📋 Tình trạng:</b><br>{d["status"]}</div>', unsafe_allow_html=True)
     
-    # BỎ DÒNG HIỂN THỊ THỜI GIAN Ở ĐÂY
     st.markdown('</div>', unsafe_allow_html=True)
 
     col_pdf, col_new = st.columns(2)
@@ -151,7 +156,6 @@ with st.form("input_form"):
     if st.form_submit_button("Gửi & Tạo biên bản"):
         if all([comp, phon, devi, seri, stat]):
             data_to_save = {"company_name": comp, "address": addr, "sender_name": send, "phone": phon, "device_name": devi, "serial_number": seri, "status": stat}
-            # Lưu vào Supabase vẫn giữ logic cũ
             supabase.table("receipts").insert(data_to_save).execute()
             st.session_state['form_submitted'] = True
             st.session_state['submitted_data'] = data_to_save
