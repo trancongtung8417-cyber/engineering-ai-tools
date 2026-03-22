@@ -53,7 +53,7 @@ st.markdown("""
         line-height: 1.8;
     }
     </style>
-    """, unsafe_allow_key=True)
+    """, unsafe_allow_html=True)
 
 # --- KHỞI TẠO BIẾN TRẠNG THÁI SESSION STATE ---
 if 'form_submitted' not in st.session_state:
@@ -152,7 +152,7 @@ if st.session_state['form_submitted']:
     
     # TẠO CONTAINER SẠCH ĐỂ CHỤP MÀN HÌNH
     # Bạn nhắc khách: "Kéo trọn cái khung đỏ này vào màn hình rồi chụp"
-    st.markdown('<div class="receipt-container">', unsafe_allow_key=True)
+    st.markdown('<div class="receipt-container">', unsafe_allow_html=True)
     
     # Logo và tiêu đề trong phiếu
     r_col_l, r_col_r = st.columns([1, 4])
@@ -160,27 +160,27 @@ if st.session_state['form_submitted']:
         if os.path.exists(logo_path):
             st.image(logo_path, width=130)
     with r_col_r:
-        st.markdown("<h1 class='receipt-header'>BIÊN BẢN NHẬN MÁY</h1>", unsafe_allow_key=True)
+        st.markdown("<h1 class='receipt-header'>BIÊN BẢN NHẬN MÁY</h1>", unsafe_allow_html=True)
     
     st.markdown("---")
     
     # Nội dung hiển thị rõ ràng, cỡ chữ lớn để chụp ảnh
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown(f"<p class='receipt-text'>🏢 **Đơn vị:** `{data['company_name']}`</p>", unsafe_allow_key=True)
-        st.markdown(f"<p class='receipt-text'>👤 **Người gửi:** `{data['sender_name']}`</p>", unsafe_allow_key=True)
-        st.markdown(f"<p class='receipt-text'>🛠️ **Thiết bị:** `{data['device_name']}`</p>", unsafe_allow_key=True)
+        st.markdown(f"<p class='receipt-text'>🏢 **Đơn vị:** `{data['company_name']}`</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='receipt-text'>👤 **Người gửi:** `{data['sender_name']}`</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='receipt-text'>🛠️ **Thiết bị:** `{data['device_name']}`</p>", unsafe_allow_html=True)
     with c2:
-        st.markdown(f"<p class='receipt-text'>📍 **Địa chỉ:** `{data['address']}`</p>", unsafe_allow_key=True)
-        st.markdown(f"<p class='receipt-text'>📞 **SĐT:** `{data['phone']}`</p>", unsafe_allow_key=True)
-        st.markdown(f"<p class='receipt-text'>🔢 **Seri:** `{data['serial_number']}`</p>", unsafe_allow_key=True)
+        st.markdown(f"<p class='receipt-text'>📍 **Địa chỉ:** `{data['address']}`</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='receipt-text'>📞 **SĐT:** `{data['phone']}`</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='receipt-text'>🔢 **Seri:** `{data['serial_number']}`</p>", unsafe_allow_html=True)
     
-    st.markdown(f"<p class='receipt-text'>📋 **Tình trạng:** {data['status']}</p>", unsafe_allow_key=True)
+    st.markdown(f"<p class='receipt-text'>📋 **Tình trạng:** {data['status']}</p>", unsafe_allow_html=True)
     st.markdown("---")
     st.caption(f"Ngày tạo: {timestamp}")
     st.caption("⚠️ Đây là phiếu xác nhận điện tử. Nhân viên Hilti sẽ liên hệ để xác nhận lại thông tin.")
     
-    st.markdown('</div>', unsafe_allow_key=True) # Đóng container
+    st.markdown('</div>', unsafe_allow_html=True) # Đóng container
     
     st.write("") # Khoảng trống
 
