@@ -94,7 +94,7 @@ def generate_pdf(data, timestamp):
     pdf.cell(95, 10, "Nhân viên nhận máy", align='C')
 
     # Trả về bytes - Dùng latin-1 replace để tránh lỗi ký tự đặc biệt
-    return pdf.output(dest='S').encode('latin-1', 'replace')
+    return bytes(pdf.output())
 
 # --- 5. LOGIC GIAO DIỆN ---
 if 'submitted' not in st.session_state:
