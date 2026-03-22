@@ -76,8 +76,9 @@ def generate_pdf(data, timestamp):
     # Bạn cần tải 2 file font dejavu-sans-condensed.ttf và dejavu-sans-condensed-bold.ttf lên Github
     # Link tải font: https://github.com/reingart/pyfpdf/raw/master/font/dejavu-sans-condensed.ttf
     # Nếu không có font này, tiếng Việt sẽ bị lỗi ô vuông.
-    font_path = "dejavu-sans-condensed.ttf"
-    font_bold_path = "dejavu-sans-condensed-bold.ttf"
+    # font_path = "dejavu-sans-condensed.ttf"
+    # font_bold_path = "dejavu-sans-condensed-bold.ttf"
+    font_path = "Roboto-Regular.ttf"
     
     if os.path.exists(font_path) and os.path.exists(font_bold_path):
         pdf.add_font('DejaVu', '', font_path, uni=True)
@@ -89,8 +90,8 @@ def generate_pdf(data, timestamp):
         st.warning("⚠️ Thiếu file Font Tiếng Việt trên GitHub. PDF có thể bị lỗi font.")
 
     # 2. Chèn Logo
-    if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=8, w=40)
+    if os.path.exists("logo.png"):
+        pdf.image("logo.png", x=10, y=8, w=40)
     
     # 3. Tiêu đề PDF
     pdf.set_xy(0, 15)
