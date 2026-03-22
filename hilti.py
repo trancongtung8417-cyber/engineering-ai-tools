@@ -15,17 +15,13 @@ except Exception as e:
     st.error(f"⚠️ Lỗi cấu hình Secrets: {e}")
     st.stop()
 
-# --- 3. CSS GIAO DIỆN ---
+# --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
 st.markdown("""
     <style>
     div.stButton > button:first-child { background-color: #DD2222 !important; color: white !important; border: none; }
     
-    .receipt-container {
-        padding: 30px; 
-        background-color: #FFFFFF;
-    }
+    .receipt-container { padding: 30px; background-color: #FFFFFF; }
 
-    /* Tiêu đề nằm trong khung xám, cách xa logo */
     .header-box-gray {
         border: 2px solid #808080; 
         padding: 20px;
@@ -37,26 +33,24 @@ st.markdown("""
     
     .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
 
-    /* Layout thông tin: Nhãn và Giá trị nằm sát nhau ở đầu hàng */
     .info-row {
         border-bottom: 1px solid #E0E0E0;
         padding: 12px 0;
         display: flex;
-        align-items: center;
     }
     .info-label {
-        width: 120px; /* Độ rộng cố định cho nhãn để thẳng hàng */
+        width: 120px; 
         font-weight: bold;
         color: #333;
+        flex-shrink: 0;
     }
     .info-value {
         color: #000;
-        margin-left: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. HÀM TẠO PDF ---
+# --- 4. HÀM TẠO PDF (ĐÃ SỬA LỖI SET_FONT) ---
 def generate_pdf(data):
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.add_page()
@@ -71,7 +65,7 @@ def generate_pdf(data):
     if os.path.exists("hilti_logo.png"):
         pdf.image("hilti_logo.png", x=10, y=10, w=30)
     
-    # Tiêu đề khung xám
+    # Tiêu đề
     pdf.set_y(50) 
     pdf.set_draw_color(128, 128, 128) 
     pdf.rect(10, 50, 190, 18)
@@ -80,7 +74,7 @@ def generate_pdf(data):
     pdf.set_font('Roboto', '', 20)
     pdf.cell(190, 10, 'BIÊN BẢN NHẬN MÁY', ln=True, align='C')
     
-    # Nội dung PDF - Căn lề đầu hàng
+    # Nội dung PDF
     pdf.ln(25)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font('Roboto', '', 12)
@@ -96,13 +90,15 @@ def generate_pdf(data):
     ]
     
     for label, value in fields:
+        pdf.set_font('Roboto', '', 12) # Đảm bảo font style đúng
         pdf.cell(35, 12, label, border='B')
         pdf.cell(155, 12, str(value), border='B', ln=True)
         
     pdf.ln(10)
-    pdf.set_font('Roboto', '', 12, 'B')
+    # SỬA LỖI TẠI ĐÂY: Không dùng tham số thứ 4, dùng style ở tham số thứ 2
+    # Nếu bạn chỉ có file Regular, hãy để style là '' để tránh lỗi
+    pdf.set_font('Roboto', '', 12) 
     pdf.cell(0, 10, "Tình trạng máy:", ln=True)
-    pdf.set_font('Roboto', '', 12)
     pdf.multi_cell(0, 10, str(data['status']))
     
     return bytes(pdf.output())
@@ -120,13 +116,13 @@ if st.session_state['form_submitted']:
     
     st.markdown(f'<div class="header-box-gray"><h1 class="header-text-red">BIÊN BẢN NHẬN MÁY</h1></div>', unsafe_allow_html=True)
     
-    # Thông tin hiển thị (Căn sát đầu hàng)
-    st.markdown(f'<div class="info-row"><span class="info-label">🏢 Đơn vị:</span><span class="info-value">{d["company_name"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span class="info-label">📍 Địa chỉ:</span><span class="info-value">{d["address"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span class="info-label">👤 Người gửi:</span><span class="info-value">{d["sender_name"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span class="info-label">📞 SĐT:</span><span class="info-value">{d["phone"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span class="info-label">🛠️ Thiết bị:</span><span class="info-value">{d["device_name"]}</span></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-row"><span class="info-label">🔢 Số Seri:</span><span class="info-value">{d["serial_number"]}</span></div>', unsafe_allow_html=True)
+    # Thông tin hiển thị bám đầu hàng
+    st.markdown(f'<div class="info-row"><div class="info-label">🏢 Đơn vị:</div><div class="info-value">{d["company_name"]}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><div class="info-label">📍 Địa chỉ:</div><div class="info-value">{d["address"]}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><div class="info-label">👤 Người gửi:</div><div class="info-value">{d["sender_name"]}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><div class="info-label">📞 SĐT:</div><div class="info-value">{d["phone"]}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><div class="info-label">🛠️ Thiết bị:</div><div class="info-value">{d["device_name"]}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><div class="info-label">🔢 Số Seri:</div><div class="info-value">{d["serial_number"]}</div></div>', unsafe_allow_html=True)
     st.markdown(f'<div style="padding: 20px 0;"><b>📋 Tình trạng:</b><br>{d["status"]}</div>', unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
