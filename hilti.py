@@ -138,14 +138,14 @@ if st.session_state['form_submitted']:
     st.stop()
 
 # --- MÀN HÌNH NHẬP LIỆU ---
-st.title("Hilti - Tiếp Nhận Thiết Bị")
+st.title("Hilti - Biên Bản Nhận Máy")
 with st.form("input_form"):
     c1, c2 = st.columns(2)
     comp = c1.text_input("Đơn vị *")
-    addr = c2.text_input("Địa chỉ")
+    addr = c1.text_input("Địa chỉ")
     send = c1.text_input("Người gửi")
     phon = c2.text_input("Số điện thoại *")
-    devi = c1.text_input("Thiết bị *")
+    devi = c2.text_input("Thiết bị *")
     seri = c2.text_input("Số Seri *")
     stat = st.text_area("Tình trạng máy *")
     
