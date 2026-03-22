@@ -7,7 +7,7 @@ import io
 
 # --- 1. CẤU HÌNH TRANG ---
 st.set_page_config(
-    page_title="Hilti - Biên Bản Nhận Máy", 
+    page_title="Hilti - Phiếu Xác Nhận", 
     page_icon="🛠️", 
     layout="centered" # Dùng centered để phiếu gom gọn khi chụp hình
 )
@@ -35,23 +35,34 @@ st.markdown("""
         background-color: #A01A1A !important;
         color: white !important;
     }
-    /* Khung chứa phiếu xác nhận khi chụp màn hình */
-    .receipt-container {
-        border: 3px solid #DD2222;
+    
+    /* Cấu hình khung chứa phiếu */
+    .receipt-main-container {
         padding: 30px;
-        border-radius: 15px;
         background-color: #FFFFFF;
         margin-top: -30px; /* Kéo lên trên cùng */
     }
-    .receipt-header {
-        color: #DD2222;
+
+    /* Khung viền đỏ bo góc bao lấy tiêu đề */
+    .receipt-header-box {
+        border: 2px solid #DD2222;
+        padding: 15px;
+        border-radius: 20px; /* Bo góc */
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        margin-top: 15px;
     }
+    
+    .receipt-header-text {
+        color: #DD2222;
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
     /* Chỉnh cỡ chữ lớn hơn cho phiếu chụp hình */
-    .receipt-text {
-        font-size: 1.2rem;
-        line-height: 1.8;
+    .receipt-info-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -72,19 +83,37 @@ def generate_pdf(data, timestamp):
         # Nếu chưa có font trên Github, dùng tạm font mặc định (không dấu)
         pdf.set_font('Helvetica', '', 12)
 
-    # 1. Chèn Logo
+    # 1. Chèn Logo Hilti lên trên cùng
     logo_path = "hilti_logo.png"
     if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=8, w=40)
+        pdf.image(logo_path, x=10, y=8, w=30)
     
-    # 2. Tiêu đề PDF
+    # 2. Khung viền đỏ bo góc bao lấy tiêu đề PDF
     pdf.set_y(15)
-    pdf.set_font('Roboto', '', 20)
-    pdf.set_text_color(221, 34, 34) # Màu đỏ Hilti
-    pdf.cell(0, 10, 'BIÊN BẢN NHẬN MÁY HILTI', ln=True, align='C')
     
-    pdf.ln(15) # Khoảng cách xuống
-    pdf.set_text_color(0, 0, 0) # Về màu đen
+    # Thiết lập màu viền đỏ
+    pdf.set_draw_color(221, 34, 34) 
+    # Thiết lập màu chữ đỏ
+    pdf.set_text_color(221, 34, 34) 
+    
+    # Vị trí và kích thước khung
+    box_x = 10
+    box_y = 15
+    box_w = 190
+    box_h = 16
+    r = 5 # Bán kính bo góc
+    
+    # Vẽ khung chữ nhật bo góc
+    pdf.rounded_rect(x=box_x, y=box_y, w=box_w, h=box_h, r=r)
+    
+    # Viết chữ vào trong khung
+    pdf.set_xy(box_x, box_y + 1)
+    pdf.set_font('Roboto', '', 18)
+    pdf.cell(box_w, box_h - 2, 'PHIẾU XÁC NHẬN NHẬN MÁY', ln=True, align='C')
+    
+    pdf.ln(10) # Khoảng cách xuống
+    # Reset màu chữ về đen
+    pdf.set_text_color(0, 0, 0) 
     pdf.set_font('Roboto', '', 12)
     
     # 3. Kẻ bảng nội dung
@@ -92,22 +121,22 @@ def generate_pdf(data, timestamp):
     col_value = 145 
 
     fields = [
-        ("Tên đơn vị:", data['company_name']),
-        ("Địa chỉ:", data['address']),
-        ("Người gửi:", data['sender_name']),
-        ("Số điện thoại:", data['phone']),
-        ("Thiết bị:", data['device_name']),
-        ("Số Seri:", data['serial_number']),
+        ("🏢 Đơn vị:", data['company_name']),
+        ("📍 Địa chỉ:", data['address']),
+        ("👤 Người gửi:", data['sender_name']),
+        ("📞 Số điện thoại:", data['phone']),
+        ("🛠️ Thiết bị:", data['device_name']),
+        ("🔢 Số Seri:", data['serial_number']),
     ]
     
     for label, value in fields:
         # Vẽ ô nhãn
         pdf.cell(col_label, 10, label, border=1)
-        # Vẽ ô giá trị (Dùng cell cho các dòng đơn)
+        # Vẽ ô giá trị
         pdf.cell(col_value, 10, str(value), border=1, ln=True)
         
     # Riêng phần Tình trạng máy dùng multi_cell nhưng phải xuống dòng mới
-    pdf.cell(col_label, 10, "Tình trạng máy:", border=1)
+    pdf.cell(col_label, 10, "📋 Tình trạng:", border=1)
     pdf.multi_cell(col_value, 10, str(data['status']), border=1)
     
     pdf.ln(10)
@@ -120,7 +149,7 @@ def generate_pdf(data, timestamp):
     pdf.cell(95, 5, 'Chữ ký Người gửi', align='C')
     pdf.cell(95, 5, 'Chữ ký Nhân viên Hilti', align='C', ln=1)
     
-    # Trả về bytes - Dùng bytes(pdf.output()) cho fpdf2
+    # Trả về bytes
     return bytes(pdf.output())
 
 # ==========================================================
@@ -145,51 +174,51 @@ if st.session_state['form_submitted']:
     data = st.session_state['submitted_data']
     timestamp = st.session_state['receipt_time']
     
-    # TẠO CONTAINER SẠCH ĐỂ CHỤP MÀN HÌNH (Khung viền đỏ)
-    st.markdown('<div class="receipt-container">', unsafe_allow_html=True)
+    # TẠO CONTAINER SẠCH ĐỂ CHỤP MÀN HÌNH
+    st.markdown('<div class="receipt-main-container">', unsafe_allow_html=True)
     
-    # Logo và tiêu đề trong phiếu
-    r_col_l, r_col_r = st.columns([1, 4])
-    with r_col_l:
+    # Logo Hilti lên trên cùng
+    c_logo, _ = st.columns([1, 4])
+    with c_logo:
         if os.path.exists(logo_path):
-            st.image(logo_path, width=130)
-    with r_col_r:
-        st.markdown("<h1 class='receipt-header'>PHIẾU XÁC NHẬN NHẬN MÁY</h1>", unsafe_allow_html=True)
+            st.image(logo_path, width=110)
+            
+    # Khung viền đỏ bo góc bao lấy tiêu đề
+    st.markdown('<div class="receipt-header-box">', unsafe_allow_html=True)
+    st.markdown("<h1 class='receipt-header-text'>PHIẾU XÁC NHẬN NHẬN MÁY</h1>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown("---")
     
     # Nội dung hiển thị rõ ràng, cỡ chữ lớn để chụp ảnh
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown(f"<p class='receipt-text'>🏢 **Đơn vị:** `{data['company_name']}`</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='receipt-text'>👤 **Người gửi:** `{data['sender_name']}`</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='receipt-text'>🛠️ **Thiết bị:** `{data['device_name']}`</p>", unsafe_allow_html=True)
-    with c2:
-        st.markdown(f"<p class='receipt-text'>📍 **Địa chỉ:** `{data['address']}`</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='receipt-text'>📞 **SĐT:** `{data['phone']}`</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='receipt-text'>🔢 **Seri:** `{data['serial_number']}`</p>", unsafe_allow_html=True)
+    cl1, cl2 = st.columns(2)
+    with cl1:
+        st.markdown(f"<p class='receipt-info-text'>🏢 **Đơn vị:** `{data['company_name']}`</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='receipt-info-text'>👤 **Người gửi:** `{data['sender_name']}`</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='receipt-info-text'>🛠️ **Thiết bị:** `{data['device_name']}`</p>", unsafe_allow_html=True)
+    with cl2:
+        st.markdown(f"<p class='receipt-info-text'>📍 **Địa chỉ:** `{data['address']}`</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='receipt-info-text'>📞 **SĐT:** `{data['phone']}`</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='receipt-info-text'>🔢 **Seri:** `{data['serial_number']}`</p>", unsafe_allow_html=True)
     
-    st.markdown(f"<p class='receipt-text'>📋 **Tình trạng:** {data['status']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p class='receipt-info-text'>📋 **Tình trạng:** {data['status']}</p>", unsafe_allow_html=True)
     st.markdown("---")
     st.caption(f"Ngày tạo: {timestamp}")
     st.caption("⚠️ Đây là phiếu xác nhận điện tử. Nhân viên Hilti sẽ liên hệ để xác nhận lại thông tin.")
     
-    st.markdown('</div>', unsafe_allow_html=True) # Đóng container
+    st.markdown('</div>', unsafe_allow_html=True) # Đóng main-container
     
     st.write("") # Khoảng trống
 
     # NÚT CHỨC NĂNG: TẢI PDF & TẠO PHIẾU MỚI
     col_pdf, col_new = st.columns(2)
     with col_pdf:
-        # Tạo dữ liệu PDF khi người dùng nhấn nút
         with st.spinner('Đang tạo file PDF...'):
             try:
                 pdf_bytes = generate_pdf(data, timestamp)
-                
-                # Nút Download PDF
                 file_name = f"Hilti_{data['serial_number']}.pdf"
                 st.download_button(
-                    label="📄 Tải File PDF Chuyên Nghiệp",
+                    label="📄 Tải File PDF",
                     data=pdf_bytes,
                     file_name=file_name,
                     mime="application/pdf",
@@ -205,24 +234,23 @@ if st.session_state['form_submitted']:
             st.session_state['submitted_data'] = {}
             st.rerun()
             
-    st.info("💡 Cách 1: Chụp màn hình khung đỏ phía trên và gửi Zalo. Cách 2: Tải file PDF.")
+    st.info("💡 Cách 1: Chụp màn hình khung phía trên và gửi Zalo. Cách 2: Tải file PDF.")
     st.stop() # Dừng, không hiển thị Form nhập liệu bên dưới
 
 
 # --- MÀN HÌNH 1: FORM NHẬP THÔNG TIN (BAN ĐẦU) ---
-col_logo, col_title = st.columns([1, 4])
-with col_logo:
+col_form_logo, col_form_title = st.columns([1, 4])
+with col_form_logo:
     if os.path.exists(logo_path):
         st.image(logo_path, width=150)
     else:
         st.error("Missing file `hilti_logo.png` on GitHub.")
-with col_title:
+with col_form_title:
     st.title("Biên Bản Nhận Máy Hilti")
     st.write("Vui lòng điền thông tin chi tiết của thiết bị.")
 
 # --- FORM NHẬP THÔNG TIN ---
 with st.form("receipt_form", clear_on_submit=True):
-    # Dùng nested columns để layout đẹp hơn trên cả mobile/desktop
     col_l, col_r = st.columns(2)
     with col_l:
         company = st.text_input("🏢 Tên đơn vị/Công ty *", placeholder="Nhập tên công ty...")
