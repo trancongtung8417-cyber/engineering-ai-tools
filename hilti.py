@@ -39,42 +39,61 @@ def generate_pdf(data, timestamp):
     pdf = FPDF()
     pdf.add_page()
     
-    # Khai báo đường dẫn font bạn đang dùng
+    # Khai báo đường dẫn font
     font_path = "Roboto-Regular.ttf"
-    
     if os.path.exists(font_path):
         pdf.add_font('Roboto', '', font_path, uni=True)
         pdf.set_font('Roboto', '', 12)
     else:
         pdf.set_font('Arial', '', 12)
 
-    # Logo
+    # 1. Chèn Logo
     if os.path.exists("hilti_logo.png"):
         pdf.image("hilti_logo.png", x=10, y=8, w=35)
     
-    pdf.set_y(20)
-    pdf.set_font('Roboto', '', 20)
-    pdf.cell(0, 10, 'BIÊN BẢN NHẬN MÁY HILTI', ln=1, align='C')
+    # 2. Tiêu đề
+    pdf.set_y(25)
+    pdf.set_font('Roboto', '', 18)
+    pdf.cell(0, 10, 'BIÊN BẢN NHẬN MÁY HILTI', ln=True, align='C')
     pdf.ln(10)
     
-    pdf.set_font('Roboto', '', 12)
-    # Nội dung bảng
+    # 3. Nội dung (Sửa lỗi multi_cell ở đây)
+    pdf.set_font('Roboto', '', 11)
+    
+    # Định nghĩa độ rộng cột cụ thể (Tổng A4 khoảng 190mm)
+    col_label = 45
+    col_value = 145 
+
     fields = [
-        ("Đơn vị:", data['company_name']),
+        ("Tên đơn vị:", data['company_name']),
         ("Địa chỉ:", data['address']),
         ("Người gửi:", data['sender_name']),
-        ("SĐT:", data['phone']),
+        ("Số điện thoại:", data['phone']),
         ("Thiết bị:", data['device_name']),
         ("Số Seri:", data['serial_number']),
-        ("Tình trạng:", data['status'])
     ]
     
     for label, value in fields:
-        pdf.cell(50, 10, label, border=1)
-        pdf.multi_cell(0, 10, str(value), border=1)
+        # Vẽ ô nhãn
+        pdf.cell(col_label, 10, label, border=1)
+        # Vẽ ô giá trị (Dùng cell thay vì multi_cell cho các dòng ngắn để an toàn)
+        pdf.cell(col_value, 10, str(value), border=1, ln=True)
+        
+    # Riêng phần Tình trạng máy dùng multi_cell nhưng phải xuống dòng mới
+    pdf.cell(col_label, 10, "Tình trạng máy:", border=1)
+    # Xuống dòng rồi mới vẽ Multi-cell để tránh lỗi "Not enough space"
+    pdf.multi_cell(col_value, 10, str(data['status']), border=1)
         
     pdf.ln(10)
-    pdf.cell(0, 10, f"Ngày tạo: {timestamp}", ln=1, align='R')
+    pdf.set_font('Roboto', '', 10)
+    pdf.cell(0, 10, f"Thời gian lập phiếu: {timestamp}", ln=True, align='R')
+    
+    # Ký tên
+    pdf.ln(10)
+    pdf.cell(95, 10, "Chữ ký khách hàng", align='C')
+    pdf.cell(95, 10, "Nhân viên nhận máy", align='C')
+
+    # Trả về bytes - Dùng latin-1 replace để tránh lỗi ký tự đặc biệt
     return pdf.output(dest='S').encode('latin-1', 'replace')
 
 # --- 5. LOGIC GIAO DIỆN ---
