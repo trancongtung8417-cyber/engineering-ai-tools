@@ -54,7 +54,7 @@ def generate_pdf(data, timestamp):
     pdf.set_draw_color(221, 34, 34)
     pdf.set_text_color(221, 34, 34)
     pdf.set_line_width(0.5)
-    pdf.cell(190, 14, 'PHIẾU XÁC NHẬN NHẬN MÁY', border=1, ln=True, align='C')
+    pdf.cell(150, 12, 'BIÊN BẢN NHẬN MÁY', border=1, ln=True, align='C')
     
     pdf.ln(10)
     pdf.set_text_color(0, 0, 0)
@@ -116,7 +116,7 @@ if st.session_state['form_submitted']:
 
     col_pdf, col_new = st.columns(2)
     with col_pdf:
-        pdf_bytes = generate_pdf(data, time_now)
+        #pdf_bytes = generate_pdf(data, time_now)
         st.download_button("📄 Tải PDF", data=pdf_bytes, file_name=f"Hilti_{data['serial_number']}.pdf", mime="application/pdf")
     with col_new:
         if st.button("➕ Tạo phiếu mới"):
