@@ -93,7 +93,7 @@ if 'form_submitted' not in st.session_state:
 if st.session_state['form_submitted']:
     # MÀN HÌNH PHIẾU XÁC NHẬN
     data = st.session_state['submitted_data']
-    #time_now = st.session_state['receipt_time']
+    time_now = st.session_state['receipt_time']
     
     st.markdown('<div class="receipt-main-container">', unsafe_allow_html=True)
     if os.path.exists("hilti_logo.png"):
@@ -111,12 +111,12 @@ if st.session_state['form_submitted']:
         st.markdown(f"**📞 SĐT:** {data['phone']}")
         st.markdown(f"**🔢 Seri:** {data['serial_number']}")
     st.markdown(f"**📋 Tình trạng:** {data['status']}")
-    #st.caption(f"Thời gian: {time_now}")
+    st.caption(f"Thời gian: {time_now}")
     st.markdown('</div>', unsafe_allow_html=True)
 
     col_pdf, col_new = st.columns(2)
     with col_pdf:
-        #pdf_bytes = generate_pdf(data, time_now)
+        pdf_bytes = generate_pdf(data, time_now)
         st.download_button("📄 Tải PDF", data=pdf_bytes, file_name=f"Hilti_{data['serial_number']}.pdf", mime="application/pdf")
     with col_new:
         if st.button("➕ Tạo phiếu mới"):
