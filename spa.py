@@ -10,20 +10,17 @@ try:
     key = st.secrets["SUPABASE_KEY"]
     supabase: Client = create_client(url, key)
     
-    # Tài khoản quản trị
     MASTER_USER = st.secrets["ADMIN_USER"]
     MASTER_PASS = st.secrets["ADMIN_PASS"]
     
-    # Thông tin liên hệ và hình ảnh (Lấy từ Secrets anh vừa cập nhật)
     C_LINK = st.secrets.get("CONTACT_LINK", "")
     C_QR = st.secrets.get("CONTACT_QR_URL", "")
-    SPA_LOGO = st.secrets.get("SPA_LOGO_URL", "") # Dòng này để đọc Logo mới
+    SPA_LOGO = st.secrets.get("SPA_LOGO_URL", "") 
     
 except Exception as e:
     st.error("Lỗi cấu hình Secrets! Vui lòng kiểm tra lại các biến trong Settings.")
     st.stop()
 
-# Cấu hình biểu tượng trên Tab trình duyệt (Favicon)
 st.set_page_config(
     page_title="Spa Manager Pro", 
     layout="wide", 
@@ -65,7 +62,6 @@ if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # Hiển thị Logo tại màn hình đăng nhập
     if SPA_LOGO:
         st.image(SPA_LOGO, width=150)
     st.title("🌿 Hệ Thống Quản Lý Spa")
@@ -96,7 +92,6 @@ else:
     # GIAO DIỆN CHỦ SHOP (OWNER)
     # ==========================================
     if st.session_state.role == "Owner":
-        # HIỂN THỊ LOGO VÀ TIÊU ĐỀ
         col_l, col_t = st.columns([1, 6])
         with col_l:
             if SPA_LOGO: st.image(SPA_LOGO, width=80)
@@ -187,23 +182,11 @@ else:
                     if not m_reason: st.warning("Vui lòng nhập nội dung!")
                     elif m_amt <= 0: st.warning("Số tiền không hợp lệ!")
                     else:
-                        final_amt = m_amt
-                        bonus_text = ""
-                        if m_act == "Nạp tiền":
-                            
-                            # if m_amt >= 5000000:
-                            #     bonus = m_amt * 0.1
-                            #     final_amt = m_amt + bonus
-                            #     bonus_text = f" (Tặng 10%: {format_vn_currency(bonus)})"
-                            # elif m_amt >= 2000000:
-                            #     bonus = m_amt * 0.05
-                            #     final_amt = m_amt + bonus
-                            #     bonus_text = f" (Tặng 5%: {format_vn_currency(bonus)})"
-                        
-                        new_bal = current_bal + final_amt if m_act == "Nạp tiền" else current_bal - m_amt
+                        # --- ĐÃ BỎ LOGIC KHUYẾN MÃI TẶNG % ---
+                        new_bal = current_bal + m_amt if m_act == "Nạp tiền" else current_bal - m_amt
                         update_user_field(m_target, "balance", new_bal)
-                        add_history(m_target, final_amt if m_act == "Nạp tiền" else m_amt, m_act, f"{m_reason}{bonus_text}")
-                        st.success("Thành công!"); st.balloons() if bonus_text else None; st.rerun()
+                        add_history(m_target, m_amt, m_act, m_reason)
+                        st.success("Giao dịch thành công!"); st.rerun()
 
         with tab3:
             st.subheader("📊 Báo cáo tổng hợp")
@@ -224,7 +207,6 @@ else:
     # GIAO DIỆN KHÁCH HÀNG (CUSTOMER)
     # ==========================================
     else:
-        # Hiển thị Logo cho khách hàng
         if SPA_LOGO: st.image(SPA_LOGO, width=100)
         st.title(f"🌿 Xin chào, {st.session_state.username}")
         
@@ -232,7 +214,6 @@ else:
         if u_info:
             balance = float(u_info['balance'])
             st.metric("SỐ DƯ TÀI KHOẢN", format_vn_currency(balance))
-            st.info("✨ Ưu đãi: Nạp từ 2tr tặng 5% | Nạp từ 5tr tặng 10%")
             
             if balance < 100000:
                 with st.warning("⚠️ **Số dư của quý khách hiện dưới 100.000 VND**"):
