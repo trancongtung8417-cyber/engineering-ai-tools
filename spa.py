@@ -177,15 +177,15 @@ else:
                         bonus_text = ""
                         
                         # --- LOGIC KHUYẾN MÃI NẠP TIỀN ---
-                        if m_act == "Nạp tiền":
-                            if m_amt >= 5000000:
-                                bonus = m_amt * 0.1
-                                final_amt = m_amt + bonus
-                                bonus_text = f" (Tặng 10%: {format_vn_currency(bonus)})"
-                            elif m_amt >= 2000000:
-                                bonus = m_amt * 0.05
-                                final_amt = m_amt + bonus
-                                bonus_text = f" (Tặng 5%: {format_vn_currency(bonus)})"
+                        # if m_act == "Nạp tiền":
+                        #     if m_amt >= 5000000:
+                        #         bonus = m_amt * 0.1
+                        #         final_amt = m_amt + bonus
+                        #         bonus_text = f" (Tặng 10%: {format_vn_currency(bonus)})"
+                        #     elif m_amt >= 2000000:
+                        #         bonus = m_amt * 0.05
+                        #         final_amt = m_amt + bonus
+                        #         bonus_text = f" (Tặng 5%: {format_vn_currency(bonus)})"
                         
                         # Tính số dư mới
                         new_bal = current_bal + final_amt if m_act == "Nạp tiền" else current_bal - m_amt
