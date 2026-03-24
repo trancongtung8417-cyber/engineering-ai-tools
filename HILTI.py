@@ -234,7 +234,7 @@ def init_firebase():
         cred = credentials.Certificate(tmp_path)
         firebase_admin.initialize_app(cred)
         os.unlink(tmp_path)
-    return firestore.client()
+    return firestore.client(prefer_rest=True)
 
 try:
     db = init_firebase()
