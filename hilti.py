@@ -18,7 +18,12 @@ except Exception as e:
 # --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
 st.markdown("""
     <style>
-    div.stButton > button:first-child { background-color: #DD2222 !important; color: white !important; border: none; }
+    
+    div.stButton > button[kind="primaryFormSubmit"] {
+        background-color: #DD2222 !important;
+        color: white !important;
+        border: none !important;
+    }
     
     .receipt-container { padding: 30px; background-color: #FFFFFF; }
 
