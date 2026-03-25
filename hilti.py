@@ -16,33 +16,31 @@ except Exception as e:
     st.stop()
 
 # --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
-
-# --- CẤU HÌNH GIAO DIỆN APP THẬT ---
-st.set_page_config(page_title="Green Life Spa", layout="wide", page_icon="🌿")
-
-# Chèn CSS để ẩn Fork, GitHub, Menu trên và Logo vương miện dưới
-hide_style = """
-    <style>
-    /* Ẩn header: bao gồm Fork, GitHub và Menu 3 chấm */
-    header {visibility: hidden;}
-    
-    /* Ẩn footer: dòng chữ 'Made with Streamlit' */
-    footer {visibility: hidden;}
-    
-    /* Ẩn logo vương miện đỏ ở góc dưới bên phải (Streamlit Toolbar) */
-    div[data-testid="stStatusWidget"] {visibility: hidden;}
-    
-    /* Tối ưu hóa khoảng cách phía trên để không bị trống khi ẩn header */
-    .main .block-container {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    </style>
-    """
-
 st.markdown("""
     <style>
     
+    /* Ẩn toàn bộ Header (Fork, GitHub, Menu 3 chấm) */
+    header[data-testid="stHeader"] {
+        visibility: hidden;
+        height: 0% !important;
+    }
+    
+    /* Ẩn Toolbar phía dưới (Vương miện đỏ và logo Streamlit) */
+    div[data-testid="stStatusWidget"], .stDeployButton {
+        display: none !important;
+        visibility: hidden;
+    }
+
+    footer {
+        visibility: hidden;
+    }
+
+    /* Tối ưu khoảng cách phía trên */
+    .main .block-container {
+        padding-top: 2rem;
+    }
+    
+
     div.stButton > button[kind="primaryFormSubmit"] {
         background-color: #DD2222 !important;
         color: white !important;
