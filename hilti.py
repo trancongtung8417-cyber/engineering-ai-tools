@@ -130,11 +130,23 @@ if st.session_state['form_submitted']:
     col_pdf, col_new = st.columns(2)
     with col_pdf:
         pdf_bytes = generate_pdf(d)
-        st.download_button("📄 Tải PDF", data=pdf_bytes, file_name=f"Hilti_{d['serial_number']}.pdf", mime="application/pdf")
+        # Nút tải PDF cũng sẽ tự động có nền trắng viền xám theo CSS trên
+        st.download_button("📄 Tải PDF", data=pdf_bytes, file_name=f"Hilti_{d['serial_number']}.pdf", mime="application/pdf", use_container_width=True)
+    
     with col_new:
-        if st.button("➕ Tạo phiếu mới"):
+        # Thêm use_container_width để nút dài bằng nút PDF
+        if st.button("➕ Tạo phiếu mới", use_container_width=True):
             st.session_state['form_submitted'] = False
             st.rerun()
+    # col_pdf, col_new = st.columns(2)
+    # with col_pdf:
+    #     pdf_bytes = generate_pdf(d)
+    #     st.download_button("📄 Tải PDF", data=pdf_bytes, file_name=f"Hilti_{d['serial_number']}.pdf", mime="application/pdf")
+    # with col_new:
+    #     if st.button("➕ Tạo phiếu mới"):
+    #         st.session_state['form_submitted'] = False
+    #         st.rerun()
+    
     st.stop()
 
 # --- MÀN HÌNH NHẬP LIỆU ---
