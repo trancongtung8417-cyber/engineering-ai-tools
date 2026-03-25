@@ -19,27 +19,33 @@ except Exception as e:
 st.markdown("""
     <style>
     
-    /* Ẩn toàn bộ Header (Fork, GitHub, Menu 3 chấm) */
+    /* 1. Ẩn thanh Header (Fork, GitHub, Menu) */
     header[data-testid="stHeader"] {
-        visibility: hidden;
-        height: 0% !important;
-    }
-    
-    /* Ẩn Toolbar phía dưới (Vương miện đỏ và logo Streamlit) */
-    div[data-testid="stStatusWidget"], .stDeployButton {
         display: none !important;
-        visibility: hidden;
-    }
-
-    footer {
-        visibility: hidden;
-    }
-
-    /* Tối ưu khoảng cách phía trên */
-    .main .block-container {
-        padding-top: 2rem;
     }
     
+    /* 2. Ẩn nút Deploy (Vương miện đỏ) */
+    .stAppDeployButton {
+        display: none !important;
+    }
+
+    /* 3. Ẩn Toolbar góc dưới bên phải (Logo Streamlit & Status) */
+    div[data-testid="stStatusWidget"] {
+        display: none !important;
+    }
+    
+    /* 4. Ẩn Footer 'Made with Streamlit' */
+    footer {
+        display: none !important;
+    }
+
+    /* 5. Xóa khoảng trắng thừa do header để lại */
+    .main .block-container {
+        padding-top: 0rem;
+        margin-top: -2rem;
+    }
+
+
 
     div.stButton > button[kind="primaryFormSubmit"] {
         background-color: #DD2222 !important;
