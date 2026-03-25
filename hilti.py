@@ -112,7 +112,7 @@ if st.session_state['form_submitted']:
     
     st.markdown('<div class="receipt-container">', unsafe_allow_html=True)
     if os.path.exists("hilti_logo.png"):
-        st.image("hilti_logo.png", width=120)
+        st.image("hilti_logo.png", width=150)
     
     st.markdown(f'<div class="header-box-gray"><h1 class="header-text-red">BIÊN BẢN NHẬN MÁY</h1></div>', unsafe_allow_html=True)
     
@@ -145,7 +145,7 @@ else:
     st.title("🔴 HILTI TOOL SERVICE CENTER")
 st.subheader("BIÊN BẢN NHẬN MÁY")
 st.write("Vui lòng điền thông tin máy cần bảo hành/sửa chữa.")
-    
+
 with st.form("input_form"):
     c1, c2 = st.columns(2)
     comp = c1.text_input("Đơn vị *")
