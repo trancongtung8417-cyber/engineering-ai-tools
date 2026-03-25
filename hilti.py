@@ -63,7 +63,7 @@ def generate_pdf(data):
         pdf.set_font('Helvetica', '', 12)
 
     if os.path.exists("hilti_logo.png"):
-        pdf.image("hilti_logo.png", x=10, y=10, w=30)
+        pdf.image("hilti_logo.png", x=15, y=15, w=40)
     
     # Tiêu đề
     pdf.set_y(50) 
@@ -138,6 +138,8 @@ if st.session_state['form_submitted']:
     st.stop()
 
 # --- MÀN HÌNH NHẬP LIỆU ---
+
+
 st.title("Hilti - Biên Bản Nhận Máy")
 with st.form("input_form"):
     c1, c2 = st.columns(2)
