@@ -130,11 +130,9 @@ if st.session_state['form_submitted']:
     col_pdf, col_new = st.columns(2)
     with col_pdf:
         pdf_bytes = generate_pdf(d)
-        # Nút tải PDF cũng sẽ tự động có nền trắng viền xám theo CSS trên
         st.download_button("📄 Tải PDF", data=pdf_bytes, file_name=f"Hilti_{d['serial_number']}.pdf", mime="application/pdf", use_container_width=True)
-    
     with col_new:
-        # Thêm use_container_width để nút dài bằng nút PDF
+        # Nút này bây giờ sẽ tự động có màu trắng viền xám giống nút Tải PDF
         if st.button("➕ Tạo phiếu mới", use_container_width=True):
             st.session_state['form_submitted'] = False
             st.rerun()
