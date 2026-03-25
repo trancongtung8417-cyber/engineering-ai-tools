@@ -139,8 +139,13 @@ if st.session_state['form_submitted']:
 
 # --- MÀN HÌNH NHẬP LIỆU ---
 
-
-st.title("Hilti - Biên Bản Nhận Máy")
+if os.path.exists("logo.png"):
+    st.image("logo.png", width=150)
+else:
+    st.title("🔴 HILTI TOOL SERVICE CENTER")
+st.subheader("BIÊN BẢN NHẬN MÁY")
+st.write("Vui lòng điền thông tin máy cần bảo hành/sửa chữa.")
+    
 with st.form("input_form"):
     c1, c2 = st.columns(2)
     comp = c1.text_input("Đơn vị *")
