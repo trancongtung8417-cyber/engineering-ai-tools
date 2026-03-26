@@ -1,76 +1,10 @@
-# from app_branding import setup_page
-setup_page()   # ← phải đặt TRƯỚC mọi lệnh st.* khác
-
 import streamlit as st
 from supabase import create_client, Client
 from fpdf import FPDF
 import os
 
-
-# --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
-# ============================================================
-#  ẨN CÁC THÀNH PHẦN MẶC ĐỊNH CỦA STREAMLIT
-#  Dán đoạn này vào ĐẦU file app của bạn (ngay sau import)
-# ============================================================
-
-def hide_streamlit_branding():
-    hide_css = """
-        <style>
-        /* 1. Ẩn Header & Trang trí */
-        header[data-testid="stHeader"], 
-        #stDecoration, 
-        .st-emotion-cache-18ni73i, 
-        .st-emotion-cache-v06y4t {
-            display: none !important;
-            visibility: hidden !important;
-        }
-
-        /* 2. Ẩn nút Deploy (Vương miện đỏ) - Cấu trúc mới nhất */
-        [data-testid="stDeployButton"],
-        .stDeployButton,
-        header .st-emotion-cache-1av8p9a,
-        header .st-emotion-cache-6q9sum {
-            display: none !important;
-        }
-
-        /* 3. Ẩn Toolbar góc dưới (Logo Streamlit & Status) */
-        /* Đây là phần quan trọng nhất cho vấn đề bạn đang gặp */
-        [data-testid="stStatusWidget"],
-        [data-testid="stToolbar"],
-        footer,
-        .st-emotion-cache-zq5wmm,
-        .st-emotion-cache-h5rgaw {
-            display: none !important;
-            visibility: hidden !important;
-        }
-
-        /* 4. Ẩn Menu 3 chấm và các phần tử liên quan */
-        #MainMenu, .st-emotion-cache-15zrgas {
-            display: none !important;
-        }
-
-        /* 5. Chỉnh lại khoảng cách phía trên do mất Header */
-        .block-container {
-            padding-top: 2rem !important;
-            padding-bottom: 0rem !important;
-        }
-
-        /* CSS cho nút bấm của bạn */
-        div.stButton > button[kind="primaryFormSubmit"] {
-            background-color: #DD2222 !important;
-            color: white !important;
-            border: none !important;
-            width: 100%; /* Giúp nút bấm dễ nhấn hơn trên điện thoại */
-        }
-        
-        /* ... giữ nguyên các class receipt-container, header-box-gray, v.v ... */
-        </style>
-    """
-    st.markdown(hide_css, unsafe_allow_html=True)
-
 # --- 1. CẤU HÌNH TRANG ---
 st.set_page_config(page_title="Hilti - Biên Bản", page_icon="🛠️", layout="centered")
-hide_streamlit_branding()
 
 # --- 2. KẾT NỐI SUPABASE ---
 try:
@@ -81,6 +15,73 @@ except Exception as e:
     st.error(f"⚠️ Lỗi cấu hình Secrets: {e}")
     st.stop()
 
+# --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
+st.markdown("""
+    <style>
+    
+    /* 1. Ẩn thanh Header (Fork, GitHub, Menu) */
+    header[data-testid="stHeader"] {
+        display: none !important;
+    }
+    
+    /* 2. Ẩn nút Deploy (Vương miện đỏ) */
+    .stAppDeployButton {
+        display: none !important;
+    }
+
+    /* 3. Ẩn Toolbar góc dưới bên phải (Logo Streamlit & Status) */
+    div[data-testid="stStatusWidget"] {
+        display: none !important;
+    }
+    
+    /* 4. Ẩn Footer 'Made with Streamlit' */
+    footer {
+        display: none !important;
+    }
+
+    /* 5. Xóa khoảng trắng thừa do header để lại */
+    .main .block-container {
+        padding-top: 0rem;
+        margin-top: -2rem;
+    }
+
+
+
+    div.stButton > button[kind="primaryFormSubmit"] {
+        background-color: #DD2222 !important;
+        color: white !important;
+        border: none !important;
+    }
+    
+    .receipt-container { padding: 30px; background-color: #FFFFFF; }
+
+    .header-box-gray {
+        border: 2px solid #808080; 
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 60px; 
+        margin-bottom: 40px;
+    }
+    
+    .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
+
+    .info-row {
+        border-bottom: 1px solid #E0E0E0;
+        padding: 12px 0;
+        display: flex;
+    }
+    .info-label {
+        width: 120px; 
+        font-weight: bold;
+        color: #333;
+        flex-shrink: 0;
+    }
+    .info-value {
+        color: #000;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # --- 4. HÀM TẠO PDF (ĐÃ SỬA LỖI SET_FONT) ---
 def generate_pdf(data):
