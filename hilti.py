@@ -3,18 +3,6 @@ from supabase import create_client, Client
 from fpdf import FPDF
 import os
 
-# --- 1. CẤU HÌNH TRANG ---
-st.set_page_config(page_title="Hilti - Biên Bản", page_icon="🛠️", layout="centered")
-    hide_streamlit_branding()
-
-# --- 2. KẾT NỐI SUPABASE ---
-try:
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
-    supabase: Client = create_client(url, key)
-except Exception as e:
-    st.error(f"⚠️ Lỗi cấu hình Secrets: {e}")
-    st.stop()
 
 # --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
 # ============================================================
@@ -104,6 +92,19 @@ def hide_streamlit_branding():
         </style>
     """
     st.markdown(hide_css, unsafe_allow_html=True)
+
+# --- 1. CẤU HÌNH TRANG ---
+st.set_page_config(page_title="Hilti - Biên Bản", page_icon="🛠️", layout="centered")
+hide_streamlit_branding()
+
+# --- 2. KẾT NỐI SUPABASE ---
+try:
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    supabase: Client = create_client(url, key)
+except Exception as e:
+    st.error(f"⚠️ Lỗi cấu hình Secrets: {e}")
+    st.stop()
 
 
 # --- 4. HÀM TẠO PDF (ĐÃ SỬA LỖI SET_FONT) ---
