@@ -1,3 +1,6 @@
+from spa_branding import setup_page
+setup_page()   # ← phải đặt TRƯỚC mọi lệnh st.* khác
+
 import streamlit as st
 import pandas as pd
 from supabase import create_client, Client
