@@ -16,34 +16,58 @@ except Exception as e:
     st.stop()
 
 # --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
-st.markdown("""
-    <style>
-    
-    /* 1. Ẩn thanh Header (Fork, GitHub, Menu) */
-    header[data-testid="stHeader"] {
-        display: none !important;
-    }
-    
-    /* 2. Ẩn nút Deploy (Vương miện đỏ) */
-    .stAppDeployButton {
-        display: none !important;
-    }
+# ============================================================
+#  ẨN CÁC THÀNH PHẦN MẶC ĐỊNH CỦA STREAMLIT
+#  Dán đoạn này vào ĐẦU file app của bạn (ngay sau import)
+# ============================================================
 
-    /* 3. Ẩn Toolbar góc dưới bên phải (Logo Streamlit & Status) */
-    div[data-testid="stStatusWidget"] {
-        display: none !important;
-    }
-    
-    /* 4. Ẩn Footer 'Made with Streamlit' */
-    footer {
-        display: none !important;
-    }
+def hide_streamlit_branding():
+    """
+    Ẩn toàn bộ UI mặc định của Streamlit:
+      • Header (Fork / GitHub / Menu 3 chấm)
+      • Nút Deploy (vương miện đỏ)
+      • Toolbar góc dưới phải (logo Streamlit + status indicator)
+    """
+    hide_css = """
+        <style>
+        /* ── 1. HEADER: Fork · GitHub · Menu ⋮ ── */
+        header[data-testid="stHeader"],
+        #stDecoration {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+        }
 
-    /* 5. Xóa khoảng trắng thừa do header để lại */
-    .main .block-container {
-        padding-top: 0rem;
-        margin-top: -2rem;
-    }
+        /* ── 2. NÚT DEPLOY (vương miện đỏ) ── */
+        .stDeployButton,
+        [data-testid="stDeployButton"],
+        button[kind="deployButton"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* ── 3. TOOLBAR GÓC DƯỚI PHẢI (logo + status) ── */
+        /* Streamlit >= 1.31 */
+        [data-testid="stToolbar"],
+        .st-emotion-cache-zq5wmm,   /* lớp động – backup */
+        footer,
+        footer[data-testid="stFooter"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* ── 4. Xoá khoảng padding thừa do header để lại ── */
+        .block-container {
+            padding-top: 1rem !important;
+        }
+
+        /* ── 5. Dòng chữ "Made with Streamlit" ở cuối trang ── */
+        #MainMenu {
+            display: none !important;
+        }
+        </style>
+    """
+    st.markdown(hide_css, unsafe_allow_html=True)
 
 
 
