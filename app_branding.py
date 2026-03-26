@@ -15,9 +15,9 @@ import streamlit as st
 import time
 
 # ── Tuỳ chỉnh tại đây ────────────────────────────────────────
-APP_NAME    = "MyApp"                         # Tên hiện trên tab trình duyệt
-APP_TAGLINE = "Powered by AI · Made with ❤️"  # Dòng phụ trên splash screen
-LOGO_URL    = "https://raw.githubusercontent.com/YOUR_USER/YOUR_REPO/main/assets/logo.png"
+APP_NAME    = "HILTI"                         # Tên hiện trên tab trình duyệt
+APP_TAGLINE = "Making Construction Better"  # Dòng phụ trên splash screen
+LOGO_URL    = "https://i.postimg.cc/MKLRmf8Q/hilti-logo.png"
 # Hoặc dùng emoji làm favicon nếu chưa có file ảnh:
 PAGE_ICON   = "🚀"                            # Hiện trên tab trình duyệt
 ACCENT_COLOR = "#4F46E5"                      # Màu chủ đạo (indigo)
