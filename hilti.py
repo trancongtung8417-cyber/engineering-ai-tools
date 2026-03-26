@@ -22,40 +22,73 @@ def hide_streamlit_branding():
     """
     hide_css = """
         <style>
-        /* ── 1. HEADER: Fork · GitHub · Menu ⋮ ── */
+        
+        /* ══════════════════════════════════════════
+           1. HEADER — Fork · GitHub · Menu ⋮
+        ══════════════════════════════════════════ */
         header[data-testid="stHeader"],
         #stDecoration {
             display: none !important;
             visibility: hidden !important;
             height: 0 !important;
+            min-height: 0 !important;
         }
 
-        /* ── 2. NÚT DEPLOY (vương miện đỏ) ── */
-        .stDeployButton,
+        /* ══════════════════════════════════════════
+           2. NÚT DEPLOY — vương miện đỏ
+              (desktop + mobile đều dùng testid này)
+        ══════════════════════════════════════════ */
         [data-testid="stDeployButton"],
+        .stDeployButton,
         button[kind="deployButton"] {
             display: none !important;
             visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            pointer-events: none !important;
         }
 
-        /* ── 3. TOOLBAR GÓC DƯỚI PHẢI (logo + status) ── */
-        /* Streamlit >= 1.31 */
+        /* ══════════════════════════════════════════
+           3. TOOLBAR DƯỚI PHẢI — logo Streamlit tím
+              Bao gồm class động trên mobile
+        ══════════════════════════════════════════ */
         [data-testid="stToolbar"],
-        .st-emotion-cache-zq5wmm,   /* lớp động – backup */
+        [data-testid="stToolbarActions"],
+        .stToolbar,
+        ._toolbarActionButtonContainer_1dp5m_1,
+        ._container_1dp5m_1,
+        ._profileContainer_1dp5m_1,
+        /* Emotion cache classes – mobile Streamlit >= 1.31 */
+        .st-emotion-cache-zq5wmm,
+        .st-emotion-cache-1dp5m1,
+        .st-emotion-cache-h4xjwg,
+        /* Wrapper bọc toàn bộ toolbar dưới */
+        div[class*="StatusWidget"],
+        div[class*="statusWidget"],
+        div[class*="toolbar"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+        }
+
+        /* ══════════════════════════════════════════
+           4. FOOTER — "Made with Streamlit"
+        ══════════════════════════════════════════ */
         footer,
-        footer[data-testid="stFooter"] {
+        footer[data-testid="stFooter"],
+        #MainMenu {
             display: none !important;
             visibility: hidden !important;
         }
 
-        /* ── 4. Xoá khoảng padding thừa do header để lại ── */
+        /* ══════════════════════════════════════════
+           5. Xoá padding thừa do header để lại
+        ══════════════════════════════════════════ */
         .block-container {
             padding-top: 1rem !important;
-        }
-
-        /* ── 5. Dòng chữ "Made with Streamlit" ở cuối trang ── */
-        #MainMenu {
-            display: none !important;
         }
 
         div.stButton > button[kind="primaryFormSubmit"] {
@@ -93,6 +126,52 @@ def hide_streamlit_branding():
     }
 
         </style>
+
+        <!-- 
+        ══════════════════════════════════════════
+        JAVASCRIPT — Xoá nút bằng JS nếu CSS không đủ
+        Chạy sau khi DOM load xong (fallback cho mobile)
+        ══════════════════════════════════════════ -->
+        <script>
+        function removeStreamlitBranding() {
+            // Danh sách selector cần xoá
+            const selectors = [
+                '[data-testid="stToolbar"]',
+                '[data-testid="stToolbarActions"]',
+                '[data-testid="stDeployButton"]',
+                '.stDeployButton',
+                'footer',
+                '#MainMenu',
+                // Các nút icon góc dưới phải (mobile)
+                'a[href="https://streamlit.io"]',
+                'button[title="Deploy this app"]',
+                'button[aria-label="Deploy this app"]',
+            ];
+
+            selectors.forEach(sel => {
+                document.querySelectorAll(sel).forEach(el => {
+                    el.style.setProperty('display', 'none', 'important');
+                    el.style.setProperty('visibility', 'hidden', 'important');
+                    el.style.setProperty('pointer-events', 'none', 'important');
+                });
+            });
+        }
+
+        // Chạy ngay khi script load
+        removeStreamlitBranding();
+
+        // Chạy lại sau 500ms, 1s, 2s — Streamlit render chậm trên mobile
+        [500, 1000, 2000, 4000].forEach(delay => {
+            setTimeout(removeStreamlitBranding, delay);
+        });
+
+        // MutationObserver: tự động ẩn nếu Streamlit re-render
+        const observer = new MutationObserver(() => {
+            removeStreamlitBranding();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        </script>
+
     """
     st.markdown(hide_css, unsafe_allow_html=True)
 
