@@ -14,84 +14,56 @@ import os
 # ============================================================
 
 def hide_streamlit_branding():
-    """
-    Ẩn toàn bộ UI mặc định của Streamlit:
-      • Header (Fork / GitHub / Menu 3 chấm)
-      • Nút Deploy (vương miện đỏ)
-      • Toolbar góc dưới phải (logo Streamlit + status indicator)
-    """
     hide_css = """
         <style>
-        /* ── 1. HEADER: Fork · GitHub · Menu ⋮ ── */
-        header[data-testid="stHeader"],
-        #stDecoration {
+        /* 1. Ẩn Header & Trang trí */
+        header[data-testid="stHeader"], 
+        #stDecoration, 
+        .st-emotion-cache-18ni73i, 
+        .st-emotion-cache-v06y4t {
             display: none !important;
             visibility: hidden !important;
-            height: 0 !important;
         }
 
-        /* ── 2. NÚT DEPLOY (vương miện đỏ) ── */
-        .stDeployButton,
+        /* 2. Ẩn nút Deploy (Vương miện đỏ) - Cấu trúc mới nhất */
         [data-testid="stDeployButton"],
-        button[kind="deployButton"] {
+        .stDeployButton,
+        header .st-emotion-cache-1av8p9a,
+        header .st-emotion-cache-6q9sum {
             display: none !important;
-            visibility: hidden !important;
         }
 
-        /* ── 3. TOOLBAR GÓC DƯỚI PHẢI (logo + status) ── */
-        /* Streamlit >= 1.31 */
+        /* 3. Ẩn Toolbar góc dưới (Logo Streamlit & Status) */
+        /* Đây là phần quan trọng nhất cho vấn đề bạn đang gặp */
+        [data-testid="stStatusWidget"],
         [data-testid="stToolbar"],
-        .st-emotion-cache-zq5wmm,   /* lớp động – backup */
         footer,
-        footer[data-testid="stFooter"] {
+        .st-emotion-cache-zq5wmm,
+        .st-emotion-cache-h5rgaw {
             display: none !important;
             visibility: hidden !important;
         }
 
-        /* ── 4. Xoá khoảng padding thừa do header để lại ── */
-        .block-container {
-            padding-top: 1rem !important;
-        }
-
-        /* ── 5. Dòng chữ "Made with Streamlit" ở cuối trang ── */
-        #MainMenu {
+        /* 4. Ẩn Menu 3 chấm và các phần tử liên quan */
+        #MainMenu, .st-emotion-cache-15zrgas {
             display: none !important;
         }
 
+        /* 5. Chỉnh lại khoảng cách phía trên do mất Header */
+        .block-container {
+            padding-top: 2rem !important;
+            padding-bottom: 0rem !important;
+        }
+
+        /* CSS cho nút bấm của bạn */
         div.stButton > button[kind="primaryFormSubmit"] {
-        background-color: #DD2222 !important;
-        color: white !important;
-        border: none !important;
-    }
-    
-    .receipt-container { padding: 30px; background-color: #FFFFFF; }
-
-    .header-box-gray {
-        border: 2px solid #808080; 
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        margin-top: 60px; 
-        margin-bottom: 40px;
-    }
-    
-    .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
-
-    .info-row {
-        border-bottom: 1px solid #E0E0E0;
-        padding: 12px 0;
-        display: flex;
-    }
-    .info-label {
-        width: 120px; 
-        font-weight: bold;
-        color: #333;
-        flex-shrink: 0;
-    }
-    .info-value {
-        color: #000;
-    }
-
+            background-color: #DD2222 !important;
+            color: white !important;
+            border: none !important;
+            width: 100%; /* Giúp nút bấm dễ nhấn hơn trên điện thoại */
+        }
+        
+        /* ... giữ nguyên các class receipt-container, header-box-gray, v.v ... */
         </style>
     """
     st.markdown(hide_css, unsafe_allow_html=True)
