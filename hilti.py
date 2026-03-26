@@ -65,13 +65,8 @@ def hide_streamlit_branding():
         #MainMenu {
             display: none !important;
         }
-        </style>
-    """
-    st.markdown(hide_css, unsafe_allow_html=True)
 
-
-
-    div.stButton > button[kind="primaryFormSubmit"] {
+        div.stButton > button[kind="primaryFormSubmit"] {
         background-color: #DD2222 !important;
         color: white !important;
         border: none !important;
@@ -104,8 +99,11 @@ def hide_streamlit_branding():
     .info-value {
         color: #000;
     }
-    </style>
-    """, unsafe_allow_html=True)
+
+        </style>
+    """
+    st.markdown(hide_css, unsafe_allow_html=True)
+
 
 # --- 4. HÀM TẠO PDF (ĐÃ SỬA LỖI SET_FONT) ---
 def generate_pdf(data):
