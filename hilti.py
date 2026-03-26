@@ -1,285 +1,104 @@
+from app_branding import setup_page
+setup_page()   # ← phải đặt TRƯỚC mọi lệnh st.* khác
+
 import streamlit as st
-import time
 from supabase import create_client, Client
 from fpdf import FPDF
 import os
 
-# ╔══════════════════════════════╗
-# ║        ⚙️  CONFIG           ║
-# ╚══════════════════════════════╝
-APP_NAME        = "Hilti"
-APP_SHORT_NAME  = "Hilti"
-TAGLINE         = "Performance. Passion. Integrity. Teamwork."
-THEME_COLOR     = "#D2001A"          # Đỏ Hilti chính xác
-THEME_DARK      = "#A50014"          # Đỏ tối hơn cho gradient
-BG_COLOR        = "#ffffff"
 
-GITHUB_USER     = "trancongtung8417-cyber"        # ← ĐỔI THÀNH USERNAME GITHUB CỦA BẠN
-GITHUB_REPO     = "engineering-ai-tools"        # ← ĐỔI THÀNH TÊN REPO CỦA BẠN
-GITHUB_BRANCH   = "main"
-LOGO_FILE       = "hilti_logo.png"   # tên file logo trong assets/
+# --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
+# ============================================================
+#  ẨN CÁC THÀNH PHẦN MẶC ĐỊNH CỦA STREAMLIT
+#  Dán đoạn này vào ĐẦU file app của bạn (ngay sau import)
+# ============================================================
 
-_BASE     = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/{GITHUB_BRANCH}/assets"
-LOGO_URL  = f"{_BASE}/{LOGO_FILE}"
+def hide_streamlit_branding():
+    """
+    Ẩn toàn bộ UI mặc định của Streamlit:
+      • Header (Fork / GitHub / Menu 3 chấm)
+      • Nút Deploy (vương miện đỏ)
+      • Toolbar góc dưới phải (logo Streamlit + status indicator)
+    """
+    hide_css = """
+        <style>
+        /* ── 1. HEADER: Fork · GitHub · Menu ⋮ ── */
+        header[data-testid="stHeader"],
+        #stDecoration {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+        }
 
-SPLASH_DURATION = 2.2   # giây
+        /* ── 2. NÚT DEPLOY (vương miện đỏ) ── */
+        .stDeployButton,
+        [data-testid="stDeployButton"],
+        button[kind="deployButton"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
 
+        /* ── 3. TOOLBAR GÓC DƯỚI PHẢI (logo + status) ── */
+        /* Streamlit >= 1.31 */
+        [data-testid="stToolbar"],
+        .st-emotion-cache-zq5wmm,   /* lớp động – backup */
+        footer,
+        footer[data-testid="stFooter"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
 
-# ╔══════════════════════════════════════╗
-# ║  1. PAGE CONFIG  (trước mọi st.*)   ║
-# ╚══════════════════════════════════════╝
-st.set_page_config(
-    page_title=APP_NAME,
-    page_icon=LOGO_URL,          # favicon tab trình duyệt
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
+        /* ── 4. Xoá khoảng padding thừa do header để lại ── */
+        .block-container {
+            padding-top: 1rem !important;
+        }
 
+        /* ── 5. Dòng chữ "Made with Streamlit" ở cuối trang ── */
+        #MainMenu {
+            display: none !important;
+        }
 
-# ╔══════════════════════════════════════╗
-# ║  2. PWA MANIFEST  → đổi icon điện   ║
-# ║     thoại khi Add to Home Screen    ║
-# ╚══════════════════════════════════════╝
-import urllib.parse
-manifest = {
-    "name": APP_NAME,
-    "short_name": APP_SHORT_NAME,
-    "description": TAGLINE,
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": BG_COLOR,
-    "theme_color": THEME_COLOR,
-    "orientation": "portrait",
-    "icons": [
-        {"src": LOGO_URL, "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
-        {"src": LOGO_URL, "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},
-    ],
-}
-import json as _json
-_manifest_str = urllib.parse.quote(_json.dumps(manifest), safe="")
-
-st.markdown(
-    f"""
-    <link rel="manifest"
-          href="data:application/manifest+json,{_manifest_str}">
-    <meta name="mobile-web-app-capable"       content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title"   content="{APP_SHORT_NAME}">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color"                  content="{THEME_COLOR}">
-    <link rel="apple-touch-icon"              href="{LOGO_URL}">
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# ╔══════════════════════════════════════╗
-# ║  3. GLOBAL CSS                       ║
-# ╚══════════════════════════════════════╝
-st.markdown(
-    f"""
-    <style>
-    /* Ẩn watermark Streamlit */
-    #MainMenu, footer, header {{ visibility: hidden; }}
-    .block-container {{ padding-top: 0.5rem !important; max-width: 1100px; }}
-
-    /* Font */
-    html, body, [class*="css"] {{
-        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    }}
-
-    /* Nút chính */
-    .stButton > button {{
-        background: {THEME_COLOR} !important;
+        div.stButton > button[kind="primaryFormSubmit"] {
+        background-color: #DD2222 !important;
         color: white !important;
         border: none !important;
-        border-radius: 6px !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.3px;
-        transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
-    }}
-    .stButton > button:hover {{
-        background: {THEME_DARK} !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 16px {THEME_COLOR}44 !important;
-    }}
+    }
+    
+    .receipt-container { padding: 30px; background-color: #FFFFFF; }
 
-    /* Metric */
-    [data-testid="metric-container"] {{
-        background: #fff;
-        border: 1px solid #f0f0f0;
+    .header-box-gray {
+        border: 2px solid #808080; 
+        padding: 20px;
         border-radius: 10px;
-        padding: 1rem 1.2rem;
-        box-shadow: 0 2px 8px #0000000a;
-    }}
-    [data-testid="stMetricValue"] {{
-        color: {THEME_COLOR} !important;
-        font-weight: 800 !important;
-        font-size: 1.7rem !important;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+        text-align: center;
+        margin-top: 60px; 
+        margin-bottom: 40px;
+    }
+    
+    .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
 
+    .info-row {
+        border-bottom: 1px solid #E0E0E0;
+        padding: 12px 0;
+        display: flex;
+    }
+    .info-label {
+        width: 120px; 
+        font-weight: bold;
+        color: #333;
+        flex-shrink: 0;
+    }
+    .info-value {
+        color: #000;
+    }
 
-# ╔══════════════════════════════════════╗
-# ║  4. SPLASH SCREEN                    ║
-# ╚══════════════════════════════════════╝
-if "splashed" not in st.session_state:
-    st.session_state.splashed = False
-
-if not st.session_state.splashed:
-    _splash = st.empty()
-    _splash.markdown(
-        f"""
-        <style>
-        #sp {{
-            position:fixed; inset:0; z-index:99999;
-            background: linear-gradient(160deg, {THEME_COLOR} 0%, {THEME_DARK} 100%);
-            display:flex; flex-direction:column;
-            align-items:center; justify-content:center;
-            animation: spOut 0.55s ease {SPLASH_DURATION}s forwards;
-        }}
-        #sp-logo {{
-            width:130px; height:130px; object-fit:contain;
-            filter: drop-shadow(0 8px 32px #00000055);
-            animation: spPop 0.6s cubic-bezier(.175,.885,.32,1.275) 0.1s both;
-        }}
-        #sp-fallback {{
-            width:130px; height:130px; display:none;
-            align-items:center; justify-content:center;
-            background: white; border-radius: 20px;
-            font-size:3rem;
-            filter: drop-shadow(0 8px 32px #00000055);
-            animation: spPop 0.6s cubic-bezier(.175,.885,.32,1.275) 0.1s both;
-        }}
-        #sp h1 {{
-            color:#fff; font-size:2.8rem; font-weight:900;
-            letter-spacing:3px; margin:22px 0 6px;
-            animation: spUp 0.5s ease 0.35s both;
-            text-transform: uppercase;
-        }}
-        #sp p {{
-            color:#ffffff99; font-size:0.85rem; margin:0;
-            animation: spUp 0.5s ease 0.5s both;
-            text-align:center; max-width:300px; line-height:1.5;
-        }}
-        #sp .divider {{
-            width:60px; height:3px; background:#fff;
-            margin:18px 0; border-radius:99px;
-            animation: spUp 0.4s ease 0.55s both;
-        }}
-        #sp .bar-wrap {{
-            margin-top:36px; width:200px; height:3px;
-            background:#ffffff33; border-radius:99px; overflow:hidden;
-            animation: spUp 0.4s ease 0.6s both;
-        }}
-        #sp .bar {{
-            height:100%; width:0%;
-            background:#fff; border-radius:99px;
-            animation: spFill {SPLASH_DURATION}s ease 0.25s forwards;
-        }}
-        @keyframes spPop {{
-            from {{ transform:scale(0.4); opacity:0 }}
-            to   {{ transform:scale(1);   opacity:1 }}
-        }}
-        @keyframes spUp {{
-            from {{ transform:translateY(18px); opacity:0 }}
-            to   {{ transform:translateY(0);    opacity:1 }}
-        }}
-        @keyframes spFill {{
-            from {{ width:0% }} to {{ width:100% }}
-        }}
-        @keyframes spOut {{
-            to {{ opacity:0; pointer-events:none }}
-        }}
         </style>
+    """
+    st.markdown(hide_css, unsafe_allow_html=True)
 
-        <div id="sp">
-            <img id="sp-logo" src="{LOGO_URL}" alt="Hilti Logo"
-                 onerror="this.style.display='none';
-                          var f=document.getElementById('sp-fallback');
-                          f.style.display='flex';">
-            <div id="sp-fallback">🔧</div>
-            <h1>HILTI</h1>
-            <div class="divider"></div>
-            <p>{TAGLINE}</p>
-            <div class="bar-wrap"><div class="bar"></div></div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    time.sleep(SPLASH_DURATION + 0.55)
-    _splash.empty()
-    st.session_state.splashed = True
-
-
-# ╔══════════════════════════════════════╗
-# ║  5. HEADER                           ║
-# ╚══════════════════════════════════════╝
-st.markdown(
-    f"""
-    <div style="
-        display:flex; align-items:center; gap:14px;
-        background: linear-gradient(90deg, {THEME_COLOR} 0%, {THEME_DARK} 100%);
-        padding:14px 24px; border-radius:12px;
-        margin-bottom:1.4rem;
-        box-shadow: 0 4px 20px {THEME_COLOR}44;
-    ">
-        <img src="{LOGO_URL}" width="46" height="46"
-             style="object-fit:contain; filter:brightness(0) invert(1);"
-             onerror="this.outerHTML='<span style=font-size:2rem;color:white>🔧</span>'">
-        <div>
-            <div style="font-size:1.4rem;font-weight:900;color:#fff;
-                        letter-spacing:2px;text-transform:uppercase">HILTI</div>
-            <div style="font-size:0.78rem;color:#ffffff99">{TAGLINE}</div>
-        </div>
-        <div style="margin-left:auto;color:#ffffff99;font-size:0.82rem">
-            🔴 Online
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-
-    # div.stButton > button[kind="primaryFormSubmit"] {
-    #     background-color: #DD2222 !important;
-    #     color: white !important;
-    #     border: none !important;
-    # }
-    
-    # .receipt-container { padding: 30px; background-color: #FFFFFF; }
-
-    # .header-box-gray {
-    #     border: 2px solid #808080; 
-    #     padding: 20px;
-    #     border-radius: 10px;
-    #     text-align: center;
-    #     margin-top: 60px; 
-    #     margin-bottom: 40px;
-    # }
-    
-    # .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
-
-    # .info-row {
-    #     border-bottom: 1px solid #E0E0E0;
-    #     padding: 12px 0;
-    #     display: flex;
-    # }
-    # .info-label {
-    #     width: 120px; 
-    #     font-weight: bold;
-    #     color: #333;
-    #     flex-shrink: 0;
-    # }
-    # .info-value {
-    #     color: #000;
-    # }
-    # </style>
-    # """, unsafe_allow_html=True)
+# --- 1. CẤU HÌNH TRANG ---
+st.set_page_config(page_title="Hilti - Biên Bản", page_icon="🛠️", layout="centered")
+hide_streamlit_branding()
 
 # --- 2. KẾT NỐI SUPABASE ---
 try:
@@ -289,6 +108,7 @@ try:
 except Exception as e:
     st.error(f"⚠️ Lỗi cấu hình Secrets: {e}")
     st.stop()
+
 
 # --- 4. HÀM TẠO PDF (ĐÃ SỬA LỖI SET_FONT) ---
 def generate_pdf(data):
