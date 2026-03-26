@@ -1,183 +1,93 @@
-from app_branding import setup_page
-setup_page()   # ← phải đặt TRƯỚC mọi lệnh st.* khác
-
 import streamlit as st
-from supabase import create_client, Client
-from fpdf import FPDF
-import os
-
-
-# --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
-# ============================================================
-#  ẨN CÁC THÀNH PHẦN MẶC ĐỊNH CỦA STREAMLIT
-#  Dán đoạn này vào ĐẦU file app của bạn (ngay sau import)
-# ============================================================
+import streamlit.components.v1 as components
 
 def hide_streamlit_branding():
-    """
-    Ẩn toàn bộ UI mặc định của Streamlit:
-      • Header (Fork / GitHub / Menu 3 chấm)
-      • Nút Deploy (vương miện đỏ)
-      • Toolbar góc dưới phải (logo Streamlit + status indicator)
-    """
-    hide_css = """
+    # 1. CSS Injection: Ẩn ngay lập tức bằng Style (Tối ưu tốc độ)
+    st.markdown("""
         <style>
-        
-        /* ══════════════════════════════════════════
-           1. HEADER — Fork · GitHub · Menu ⋮
-        ══════════════════════════════════════════ */
-        header[data-testid="stHeader"],
-        #stDecoration {
+        /* Ẩn Header & Trang trí dải màu trên cùng */
+        header[data-testid="stHeader"], #stDecoration {
             display: none !important;
             visibility: hidden !important;
-            height: 0 !important;
-            min-height: 0 !important;
         }
 
-        /* ══════════════════════════════════════════
-           2. NÚT DEPLOY — vương miện đỏ
-              (desktop + mobile đều dùng testid này)
-        ══════════════════════════════════════════ */
-        [data-testid="stDeployButton"],
-        .stDeployButton,
-        button[kind="deployButton"] {
-            display: none !important;
-            visibility: hidden !important;
-            width: 0 !important;
-            height: 0 !important;
-            pointer-events: none !important;
-        }
-
-        /* ══════════════════════════════════════════
-           3. TOOLBAR DƯỚI PHẢI — logo Streamlit tím
-              Bao gồm class động trên mobile
-        ══════════════════════════════════════════ */
-        [data-testid="stToolbar"],
-        [data-testid="stToolbarActions"],
-        .stToolbar,
-        ._toolbarActionButtonContainer_1dp5m_1,
-        ._container_1dp5m_1,
-        ._profileContainer_1dp5m_1,
-        /* Emotion cache classes – mobile Streamlit >= 1.31 */
-        .st-emotion-cache-zq5wmm,
-        .st-emotion-cache-1dp5m1,
-        .st-emotion-cache-h4xjwg,
-        /* Wrapper bọc toàn bộ toolbar dưới */
-        div[class*="StatusWidget"],
-        div[class*="statusWidget"],
-        div[class*="toolbar"] {
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            width: 0 !important;
-            overflow: hidden !important;
-            pointer-events: none !important;
-        }
-
-        /* ══════════════════════════════════════════
-           4. FOOTER — "Made with Streamlit"
-        ══════════════════════════════════════════ */
-        footer,
-        footer[data-testid="stFooter"],
+        /* Ẩn nút Deploy & Menu 3 chấm (Desktop & Mobile) */
+        [data-testid="stDeployButton"], 
+        .stDeployButton, 
         #MainMenu {
             display: none !important;
-            visibility: hidden !important;
         }
 
-        /* ══════════════════════════════════════════
-           5. Xoá padding thừa do header để lại
-        ══════════════════════════════════════════ */
+        /* Ẩn Toolbar góc dưới phải & Footer */
+        footer {visibility: hidden !important;}
+        [data-testid="stToolbar"], [data-testid="stToolbarActions"] {
+            display: none !important;
+        }
+
+        /* Xử lý khoảng trắng do Header để lại */
         .block-container {
-            padding-top: 1rem !important;
+            padding-top: 1.5rem !important;
         }
 
+        /* --- Tùy chỉnh Giao diện chuyên nghiệp --- */
         div.stButton > button[kind="primaryFormSubmit"] {
-        background-color: #DD2222 !important;
-        color: white !important;
-        border: none !important;
-    }
-    
-    .receipt-container { padding: 30px; background-color: #FFFFFF; }
-
-    .header-box-gray {
-        border: 2px solid #808080; 
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        margin-top: 60px; 
-        margin-bottom: 40px;
-    }
-    
-    .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
-
-    .info-row {
-        border-bottom: 1px solid #E0E0E0;
-        padding: 12px 0;
-        display: flex;
-    }
-    .info-label {
-        width: 120px; 
-        font-weight: bold;
-        color: #333;
-        flex-shrink: 0;
-    }
-    .info-value {
-        color: #000;
-    }
-
+            background-color: #DD2222 !important;
+            color: white !important;
+            border: none !important;
+            width: 100%;
+        }
+        
+        .header-box-gray {
+            border: 2px solid #808080; padding: 20px;
+            border-radius: 10px; text-align: center;
+            margin-bottom: 20px;
+        }
         </style>
+    """, unsafe_allow_html=True)
 
-        <!-- 
-        ══════════════════════════════════════════
-        JAVASCRIPT — Xoá nút bằng JS nếu CSS không đủ
-        Chạy sau khi DOM load xong (fallback cho mobile)
-        ══════════════════════════════════════════ -->
+    # 2. JavaScript Injection: Xử lý triệt để lớp cha (Parent DOM)
+    # Cần dùng window.parent để tác động ra ngoài iframe của Streamlit Cloud
+    components.html(
+        """
         <script>
-        function removeStreamlitBranding() {
-            // Danh sách selector cần xoá
+        function cleanup() {
+            const doc = window.parent.document;
             const selectors = [
-                '[data-testid="stToolbar"]',
-                '[data-testid="stToolbarActions"]',
+                '[data-testid="stHeader"]',
                 '[data-testid="stDeployButton"]',
-                '.stDeployButton',
+                '[data-testid="stToolbar"]',
                 'footer',
-                '#MainMenu',
-                // Các nút icon góc dưới phải (mobile)
-                'a[href="https://streamlit.io"]',
-                'button[title="Deploy this app"]',
-                'button[aria-label="Deploy this app"]',
+                '#MainMenu'
             ];
-
-            selectors.forEach(sel => {
-                document.querySelectorAll(sel).forEach(el => {
-                    el.style.setProperty('display', 'none', 'important');
-                    el.style.setProperty('visibility', 'hidden', 'important');
-                    el.style.setProperty('pointer-events', 'none', 'important');
-                });
+            selectors.forEach(s => {
+                const el = doc.querySelector(s);
+                if (el) {
+                    el.style.display = 'none';
+                    el.style.visibility = 'hidden';
+                }
             });
         }
-
-        // Chạy ngay khi script load
-        removeStreamlitBranding();
-
-        // Chạy lại sau 500ms, 1s, 2s — Streamlit render chậm trên mobile
-        [500, 1000, 2000, 4000].forEach(delay => {
-            setTimeout(removeStreamlitBranding, delay);
-        });
-
-        // MutationObserver: tự động ẩn nếu Streamlit re-render
-        const observer = new MutationObserver(() => {
-            removeStreamlitBranding();
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
+        
+        // Chạy ngay và lặp lại để xử lý render trễ
+        cleanup();
+        setInterval(cleanup, 1000); 
         </script>
+        """,
+        height=0, width=0
+    )
 
-    """
-    st.markdown(hide_css, unsafe_allow_html=True)
-
-# --- 1. CẤU HÌNH TRANG ---
+# --- KHỞI TẠO APP ---
+# Nếu bạn dùng setup_page() từ file khác, hãy đảm bảo nó không chứa st.set_page_config lần nữa
 st.set_page_config(page_title="Hilti - Biên Bản", page_icon="🛠️", layout="centered")
 hide_streamlit_branding()
+
+# --- NỘI DUNG ---
+st.markdown('<div class="header-box-gray"><h1 style="color:#DD2222; margin:0;">HILTI SYSTEM</h1></div>', unsafe_allow_html=True)
+
+with st.form("hilti_form"):
+    st.text_input("Mã số thiết bị")
+    st.date_input("Ngày kiểm định")
+    st.form_submit_button("XÁC NHẬN")
 
 # --- 2. KẾT NỐI SUPABASE ---
 try:
