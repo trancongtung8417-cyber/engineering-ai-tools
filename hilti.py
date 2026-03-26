@@ -68,44 +68,6 @@ st.markdown(
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color"                  content="{THEME_COLOR}">
     <link rel="apple-touch-icon"              href="{LOGO_URL}">
-    
-    
-    <style>
-    div.stButton > button[kind="primaryFormSubmit"] {
-        background-color: #DD2222 !important;
-        color: white !important;
-        border: none !important;
-    }
-    
-    .receipt-container { padding: 30px; background-color: #FFFFFF; }
-
-    .header-box-gray {
-        border: 2px solid #808080; 
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        margin-top: 60px; 
-        margin-bottom: 40px;
-    }
-    
-    .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
-
-    .info-row {
-        border-bottom: 1px solid #E0E0E0;
-        padding: 12px 0;
-        display: flex;
-    }
-    .info-label {
-        width: 120px; 
-        font-weight: bold;
-        color: #333;
-        flex-shrink: 0;
-    }
-    .info-value {
-        color: #000;
-    }
-    </style>
-
     """,
     unsafe_allow_html=True,
 )
@@ -283,41 +245,41 @@ st.markdown(
 
 
 
-    div.stButton > button[kind="primaryFormSubmit"] {
-        background-color: #DD2222 !important;
-        color: white !important;
-        border: none !important;
-    }
+    # div.stButton > button[kind="primaryFormSubmit"] {
+    #     background-color: #DD2222 !important;
+    #     color: white !important;
+    #     border: none !important;
+    # }
     
-    .receipt-container { padding: 30px; background-color: #FFFFFF; }
+    # .receipt-container { padding: 30px; background-color: #FFFFFF; }
 
-    .header-box-gray {
-        border: 2px solid #808080; 
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        margin-top: 60px; 
-        margin-bottom: 40px;
-    }
+    # .header-box-gray {
+    #     border: 2px solid #808080; 
+    #     padding: 20px;
+    #     border-radius: 10px;
+    #     text-align: center;
+    #     margin-top: 60px; 
+    #     margin-bottom: 40px;
+    # }
     
-    .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
+    # .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
 
-    .info-row {
-        border-bottom: 1px solid #E0E0E0;
-        padding: 12px 0;
-        display: flex;
-    }
-    .info-label {
-        width: 120px; 
-        font-weight: bold;
-        color: #333;
-        flex-shrink: 0;
-    }
-    .info-value {
-        color: #000;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    # .info-row {
+    #     border-bottom: 1px solid #E0E0E0;
+    #     padding: 12px 0;
+    #     display: flex;
+    # }
+    # .info-label {
+    #     width: 120px; 
+    #     font-weight: bold;
+    #     color: #333;
+    #     flex-shrink: 0;
+    # }
+    # .info-value {
+    #     color: #000;
+    # }
+    # </style>
+    # """, unsafe_allow_html=True)
 
 # --- 2. KẾT NỐI SUPABASE ---
 try:
