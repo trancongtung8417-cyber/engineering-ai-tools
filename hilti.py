@@ -5,6 +5,7 @@ import os
 
 # --- 1. CẤU HÌNH TRANG ---
 st.set_page_config(page_title="Hilti - Biên Bản", page_icon="🛠️", layout="centered")
+hide_streamlit_branding()
 
 # --- 2. KẾT NỐI SUPABASE ---
 try:
