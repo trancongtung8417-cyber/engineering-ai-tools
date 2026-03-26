@@ -218,7 +218,7 @@ st.write("Vui lòng điền thông tin máy cần bảo hành/sửa chữa.")
 
 with st.form("input_form"):
     c1, c2 = st.columns(2)
-    comp = c1.text_input("Đơn vị *")
+    comp = c1.text_input("Công ty *")
     addr = c1.text_input("Địa chỉ*")
     send = c1.text_input("Người gửi")
     phon = c2.text_input("Số điện thoại *")
