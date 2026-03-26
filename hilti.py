@@ -1,93 +1,104 @@
+from app_branding import setup_page
+setup_page()   # ← phải đặt TRƯỚC mọi lệnh st.* khác
+
 import streamlit as st
-import streamlit.components.v1 as components
+from supabase import create_client, Client
+from fpdf import FPDF
+import os
+
+
+# --- 3. CSS GIAO DIỆN (CĂN ĐẦU HÀNG, BỎ KHUNG MỜ) ---
+# ============================================================
+#  ẨN CÁC THÀNH PHẦN MẶC ĐỊNH CỦA STREAMLIT
+#  Dán đoạn này vào ĐẦU file app của bạn (ngay sau import)
+# ============================================================
 
 def hide_streamlit_branding():
-    # 1. CSS Injection: Ẩn ngay lập tức bằng Style (Tối ưu tốc độ)
-    st.markdown("""
+    """
+    Ẩn toàn bộ UI mặc định của Streamlit:
+      • Header (Fork / GitHub / Menu 3 chấm)
+      • Nút Deploy (vương miện đỏ)
+      • Toolbar góc dưới phải (logo Streamlit + status indicator)
+    """
+    hide_css = """
         <style>
-        /* Ẩn Header & Trang trí dải màu trên cùng */
-        header[data-testid="stHeader"], #stDecoration {
+        /* ── 1. HEADER: Fork · GitHub · Menu ⋮ ── */
+        header[data-testid="stHeader"],
+        #stDecoration {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+        }
+
+        /* ── 2. NÚT DEPLOY (vương miện đỏ) ── */
+        .stDeployButton,
+        [data-testid="stDeployButton"],
+        button[kind="deployButton"] {
             display: none !important;
             visibility: hidden !important;
         }
 
-        /* Ẩn nút Deploy & Menu 3 chấm (Desktop & Mobile) */
-        [data-testid="stDeployButton"], 
-        .stDeployButton, 
+        /* ── 3. TOOLBAR GÓC DƯỚI PHẢI (logo + status) ── */
+        /* Streamlit >= 1.31 */
+        [data-testid="stToolbar"],
+        .st-emotion-cache-zq5wmm,   /* lớp động – backup */
+        footer,
+        footer[data-testid="stFooter"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* ── 4. Xoá khoảng padding thừa do header để lại ── */
+        .block-container {
+            padding-top: 1rem !important;
+        }
+
+        /* ── 5. Dòng chữ "Made with Streamlit" ở cuối trang ── */
         #MainMenu {
             display: none !important;
         }
 
-        /* Ẩn Toolbar góc dưới phải & Footer */
-        footer {visibility: hidden !important;}
-        [data-testid="stToolbar"], [data-testid="stToolbarActions"] {
-            display: none !important;
-        }
-
-        /* Xử lý khoảng trắng do Header để lại */
-        .block-container {
-            padding-top: 1.5rem !important;
-        }
-
-        /* --- Tùy chỉnh Giao diện chuyên nghiệp --- */
         div.stButton > button[kind="primaryFormSubmit"] {
-            background-color: #DD2222 !important;
-            color: white !important;
-            border: none !important;
-            width: 100%;
-        }
-        
-        .header-box-gray {
-            border: 2px solid #808080; padding: 20px;
-            border-radius: 10px; text-align: center;
-            margin-bottom: 20px;
-        }
+        background-color: #DD2222 !important;
+        color: white !important;
+        border: none !important;
+    }
+    
+    .receipt-container { padding: 30px; background-color: #FFFFFF; }
+
+    .header-box-gray {
+        border: 2px solid #808080; 
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 60px; 
+        margin-bottom: 40px;
+    }
+    
+    .header-text-red { color: #DD2222; font-size: 2rem; font-weight: bold; margin: 0; }
+
+    .info-row {
+        border-bottom: 1px solid #E0E0E0;
+        padding: 12px 0;
+        display: flex;
+    }
+    .info-label {
+        width: 120px; 
+        font-weight: bold;
+        color: #333;
+        flex-shrink: 0;
+    }
+    .info-value {
+        color: #000;
+    }
+
         </style>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(hide_css, unsafe_allow_html=True)
 
-    # 2. JavaScript Injection: Xử lý triệt để lớp cha (Parent DOM)
-    # Cần dùng window.parent để tác động ra ngoài iframe của Streamlit Cloud
-    components.html(
-        """
-        <script>
-        function cleanup() {
-            const doc = window.parent.document;
-            const selectors = [
-                '[data-testid="stHeader"]',
-                '[data-testid="stDeployButton"]',
-                '[data-testid="stToolbar"]',
-                'footer',
-                '#MainMenu'
-            ];
-            selectors.forEach(s => {
-                const el = doc.querySelector(s);
-                if (el) {
-                    el.style.display = 'none';
-                    el.style.visibility = 'hidden';
-                }
-            });
-        }
-        
-        // Chạy ngay và lặp lại để xử lý render trễ
-        cleanup();
-        setInterval(cleanup, 1000); 
-        </script>
-        """,
-        height=0, width=0
-    )
-
-# --- KHỞI TẠO APP ---
-# Nếu bạn dùng setup_page() từ file khác, hãy đảm bảo nó không chứa st.set_page_config lần nữa
+# --- 1. CẤU HÌNH TRANG ---
 st.set_page_config(page_title="Hilti - Biên Bản", page_icon="🛠️", layout="centered")
 hide_streamlit_branding()
-
-# --- NỘI DUNG ---
-st.markdown('<div class="header-box-gray"><h1 style="color:#DD2222; margin:0;">HILTI SYSTEM</h1></div>', unsafe_allow_html=True)
-
-with st.form("hilti_form"):
-    st.text_input("Mã số thiết bị")
-    st.date_input("Ngày kiểm định")
-    st.form_submit_button("XÁC NHẬN")
 
 # --- 2. KẾT NỐI SUPABASE ---
 try:
