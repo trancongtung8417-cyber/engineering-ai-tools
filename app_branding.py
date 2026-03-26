@@ -8,7 +8,7 @@ import streamlit as st
 import time
 
 # ── Tuỳ chỉnh tại đây ────────────────────────────────────────
-APP_NAME      = "HILTI"                          
+APP_NAME      = "HILTI VIET NAM"                          
 APP_TAGLINE   = "Making Construction Better"  
 LOGO_URL      = "https://i.postimg.cc/MKLRmf8Q/hilti-logo.png"
 PAGE_ICON     = "🏗️"                            # Thay tên lửa bằng icon xây dựng
