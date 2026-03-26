@@ -141,7 +141,7 @@ def generate_pdf(data):
     pdf.set_draw_color(224, 224, 224) 
     
     fields = [
-        ("Đơn vị:", data['company_name']),
+        ("Công ty:", data['company_name']),
         ("Địa chỉ:", data['address']),
         ("Người gửi:", data['sender_name']),
         ("SĐT:", data['phone']),
@@ -158,7 +158,7 @@ def generate_pdf(data):
     # SỬA LỖI TẠI ĐÂY: Không dùng tham số thứ 4, dùng style ở tham số thứ 2
     # Nếu bạn chỉ có file Regular, hãy để style là '' để tránh lỗi
     pdf.set_font('Roboto', '', 12) 
-    pdf.cell(0, 10, "Tình trạng máy:", ln=True)
+    pdf.cell(0, 10, "Tình trạng máy (không chạy, không khoan, không đục,...):", ln=True)
     pdf.multi_cell(0, 10, str(data['status']))
     
     return bytes(pdf.output())
@@ -177,7 +177,7 @@ if st.session_state['form_submitted']:
     st.markdown(f'<div class="header-box-gray"><h1 class="header-text-red">BIÊN BẢN NHẬN MÁY</h1></div>', unsafe_allow_html=True)
     
     # Thông tin hiển thị bám đầu hàng
-    st.markdown(f'<div class="info-row"><div class="info-label">🏢 Đơn vị:</div><div class="info-value">{d["company_name"]}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-row"><div class="info-label">🏢 Công ty:</div><div class="info-value">{d["company_name"]}</div></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="info-row"><div class="info-label">📍 Địa chỉ:</div><div class="info-value">{d["address"]}</div></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="info-row"><div class="info-label">👤 Người gửi:</div><div class="info-value">{d["sender_name"]}</div></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="info-row"><div class="info-label">📞 SĐT:</div><div class="info-value">{d["phone"]}</div></div>', unsafe_allow_html=True)
@@ -219,7 +219,7 @@ st.write("Vui lòng điền thông tin máy cần bảo hành/sửa chữa.")
 with st.form("input_form"):
     c1, c2 = st.columns(2)
     comp = c1.text_input("Đơn vị *")
-    addr = c1.text_input("Địa chỉ")
+    addr = c1.text_input("Địa chỉ*")
     send = c1.text_input("Người gửi")
     phon = c2.text_input("Số điện thoại *")
     devi = c2.text_input("Thiết bị *")
@@ -227,7 +227,7 @@ with st.form("input_form"):
     stat = st.text_area("Tình trạng máy *")
     
     if st.form_submit_button("Gửi & Tạo biên bản"):
-        if all([comp, phon, devi, seri, stat]):
+        if all([comp, addr, send, phon, devi, seri, stat]):
             data_to_save = {"company_name": comp, "address": addr, "sender_name": send, "phone": phon, "device_name": devi, "serial_number": seri, "status": stat}
             supabase.table("receipts").insert(data_to_save).execute()
             st.session_state['form_submitted'] = True
