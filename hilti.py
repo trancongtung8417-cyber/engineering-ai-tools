@@ -1,5 +1,5 @@
 # from app_branding import setup_page
-# setup_page()   # ← phải đặt TRƯỚC mọi lệnh st.* khác
+setup_page()   # ← phải đặt TRƯỚC mọi lệnh st.* khác
 
 import streamlit as st
 from supabase import create_client, Client
