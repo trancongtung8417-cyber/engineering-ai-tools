@@ -15,6 +15,151 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# ─── PWA + HIDE STREAMLIT UI ──────────────────────────────────────────────────
+st.markdown("""
+<head>
+  <!-- PWA Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kho Hàng">
+  <meta name="application-name" content="Kho Hàng">
+  <meta name="theme-color" content="#1F4E79">
+
+  <!-- PWA Icons (Apple & Android) -->
+  <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/warehouse.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/fluency/192/warehouse.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="https://img.icons8.com/fluency/512/warehouse.png">
+
+  <!-- Web App Manifest (inline via JS) -->
+  <script>
+    const manifest = {
+      name: "Quản Lý Kho Hàng",
+      short_name: "Kho Hàng",
+      description: "Hệ thống quản lý kho hàng chuyên nghiệp",
+      start_url: "/",
+      display: "standalone",
+      background_color: "#0E1117",
+      theme_color: "#1F4E79",
+      orientation: "portrait-primary",
+      icons: [
+        {
+          src: "https://img.icons8.com/fluency/192/warehouse.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any maskable"
+        },
+        {
+          src: "https://img.icons8.com/fluency/512/warehouse.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any maskable"
+        }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement("link");
+    link.rel   = "manifest";
+    link.href  = url;
+    document.head.appendChild(link);
+  </script>
+</head>
+
+<style>
+/* ── Ẩn toàn bộ Streamlit chrome ── */
+
+/* Header bar (Fork · Star · GitHub · menu ⋮) */
+header[data-testid="stHeader"],
+[data-testid="stHeader"] { display: none !important; }
+
+/* Nút Deploy (vương miện đỏ) */
+[data-testid="stDeployButton"],
+.stDeployButton { display: none !important; }
+
+/* Toolbar góc dưới phải (logo Streamlit & status) */
+[data-testid="stToolbar"],
+.stToolbar,
+#stDecoration,
+footer,
+footer > *,
+[data-testid="stStatusWidget"],
+.stStatusWidget { display: none !important; }
+
+/* Xoá khoảng trắng thừa trên cùng do header để lại */
+.main .block-container {
+  padding-top: 1rem !important;
+}
+
+/* ── Style giao diện chuyên nghiệp ── */
+[data-testid="stSidebar"] { background: #1F4E79; }
+[data-testid="stSidebar"] * { color: #FFFFFF !important; }
+.stButton>button {
+  background: #1F4E79;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.stButton>button:hover { background: #2980B9; }
+h1 { color: #1F4E79; }
+h2 { color: #2980B9; }
+</style>
+
+<!-- Banner "Thêm vào màn hình chính" cho iOS -->
+<script>
+  // Hiển thị hướng dẫn Add to Home Screen một lần duy nhất
+  if (!localStorage.getItem("pwa_prompt_shown")) {
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = window.navigator.standalone === true
+                      || window.matchMedia("(display-mode: standalone)").matches;
+    if (isIOS && !isStandalone) {
+      const div = document.createElement("div");
+      div.id = "pwa-banner";
+      div.style.cssText = `
+        position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+        background:#1F4E79; color:#fff; padding:12px 20px; border-radius:12px;
+        font-size:14px; z-index:9999; box-shadow:0 4px 16px rgba(0,0,0,0.4);
+        max-width:90vw; text-align:center; line-height:1.5;
+      `;
+      div.innerHTML = `
+        📲 <strong>Thêm vào màn hình chính:</strong><br>
+        Nhấn <strong>⬆ Share</strong> → <strong>Add to Home Screen</strong>
+        <button onclick="document.getElementById('pwa-banner').remove();
+                         localStorage.setItem('pwa_prompt_shown','1');"
+                style="margin-left:12px;background:#fff;color:#1F4E79;
+                       border:none;border-radius:6px;padding:4px 10px;
+                       cursor:pointer;font-weight:700;">✕</button>
+      `;
+      document.body.appendChild(div);
+      localStorage.setItem("pwa_prompt_shown", "1");
+    }
+  }
+
+  // Android: lắng nghe sự kiện beforeinstallprompt
+  let deferredPrompt;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const btn = document.createElement("button");
+    btn.id = "android-install-btn";
+    btn.innerText = "📲 Cài đặt App";
+    btn.style.cssText = `
+      position:fixed; bottom:20px; right:20px; z-index:9999;
+      background:#1F4E79; color:#fff; border:none; border-radius:10px;
+      padding:12px 18px; font-size:14px; font-weight:700; cursor:pointer;
+      box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    `;
+    btn.onclick = async () => {
+      btn.remove();
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    };
+    document.body.appendChild(btn);
+  });
+</script>
+""", unsafe_allow_html=True)
+
 # ─── SUPABASE CONNECTION ────────────────────────────────────────────────────────
 @st.cache_resource
 def get_supabase() -> Client:
@@ -185,18 +330,6 @@ def build_excel(date_from, date_to):
     buf = BytesIO()
     wb.save(buf); buf.seek(0)
     return buf
-
-# ─── CSS ───────────────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-[data-testid="stSidebar"] {background: #1F4E79;}
-[data-testid="stSidebar"] * {color: #FFFFFF !important;}
-.stButton>button {background:#1F4E79;color:white;border-radius:8px;font-weight:600;}
-.stButton>button:hover {background:#2980B9;}
-h1 {color:#1F4E79;}
-h2 {color:#2980B9;}
-</style>
-""", unsafe_allow_html=True)
 
 # ─── SIDEBAR ───────────────────────────────────────────────────────────────────
 st.sidebar.markdown("## 🏭 Quản Lý Kho Hàng")
