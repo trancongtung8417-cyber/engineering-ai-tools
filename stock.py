@@ -1,4 +1,4 @@
-from spa_branding import setup_page
+from stock_branding import setup_page
 setup_page()   # ← phải đặt TRƯỚC mọi lệnh st.* khác
 
 import streamlit as st
