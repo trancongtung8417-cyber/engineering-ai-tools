@@ -28,8 +28,8 @@ st.markdown("""
 
   <!-- PWA Icons (Apple & Android) -->
   <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/warehouse.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/fluency/192/warehouse.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="https://img.icons8.com/fluency/512/warehouse.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="https://i.postimg.cc/kXsKsZs7/192-1.jpg">
+  <link rel="icon" type="image/png" sizes="512x512" href="https://https://i.postimg.cc/tJynttVv/512.jpg">
 
   <!-- Web App Manifest (inline via JS) -->
   <script>
